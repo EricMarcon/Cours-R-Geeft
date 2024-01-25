@@ -1,0 +1,455 @@
+---
+title: "Mise à niveau R 2/3"
+author: "Eric Marcon"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+url: https://EricMarcon.github.io/Cours-R-Geeft/
+github-repo: EricMarcon/Cours-R-Geeft
+bibliography: references.bib
+biblio-style: chicago
+urlcolor: blue
+output:
+  bookdown::beamer_presentation2:
+    latex_engine: xelatex
+    includes:
+      in_header: latex/header.tex
+    citation_package: natbib
+    slide_level: 2
+    df_print: default
+    number_sections: no
+    toc: no
+    fig_caption: no
+    keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
+---
+
+```{r}
+#| label: DoNotModify
+#| include: false
+### Utilities. Do not modify.
+# Installation of packages if necessary
+InstallPackages <- function(Packages) {
+  InstallPackage <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {
+      install.packages(Package, repos = "https://cran.rstudio.com/")
+    }
+  }
+  invisible(sapply(Packages, InstallPackage))
+}
+
+# Basic packages
+InstallPackages(c("bookdown", "formatR", "kableExtra", "ragg"))
+
+# kableExtra must be loaded 
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "docx") {
+  # Word output (https://stackoverflow.com/questions/35144130/in-knitr-how-can-i-test-for-if-the-output-will-be-pdf-or-word)
+  # Do not use autoformat (https://github.com/haozhu233/kableExtra/issues/308)
+  options(kableExtra.auto_format = FALSE)
+}
+library("kableExtra")
+
+# Chunk font size hook: allows size='small' or any valid Latex font size in chunk options
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r}
+#| label: Options
+#| include: false
+### Customized options for this document
+# Add necessary packages here
+Packages <- c("tidyverse", "entropart")
+# Install them
+InstallPackages(Packages)
+
+# knitr options
+knitr::opts_chunk$set(
+  cache =   TRUE,     # Cache chunk results
+  include = TRUE,     # Show/Hide chunks
+  echo =    TRUE,     # Show/Hide code
+  warning = FALSE,    # Show/Hide warnings
+  message = FALSE,    # Show/Hide messages
+  # Figure alignment and size
+  fig.align = 'center', out.width = '80%',
+  # Graphic devices (ragg_png is better than standard png)
+  dev = c("ragg_png", "pdf"),
+  # Code chunk format
+  tidy = FALSE, tidy.opts = list(blank = FALSE, width.cutoff = 50),
+  size = "scriptsize", knitr.graphics.auto_pdf = TRUE
+)
+options(width = 50)
+
+# ggplot style
+library("tidyverse")
+theme_set(theme_bw())
+theme_update(
+  panel.background = element_rect(fill = "transparent", colour = NA),
+  plot.background = element_rect(fill = "transparent", colour = NA)
+)
+knitr::opts_chunk$set(dev.args = list(bg = "transparent"))
+
+# Tibbles: 5 lines, fit to slide width
+options(tibble.print_min = 5, tibble.width = 50)
+
+# Random seed
+set.seed(973)
+```
+
+
+# Données
+
+## Les variables{.columns-2} 
+
+\begincols
+  \begincol{.48\textwidth}
+  
+Créer un script R.
+Ecrire en haut à gauche.
+
+```{r}
+# Affectation
+a <- 1
+# ou encore
+1 -> a
+# mais éviter
+a = 1
+```
+
+Exécuter (Ctrl+Entrée) : voir en bas à gauche.
+Environnement en haut à droite.
+  
+  <p class="forceBreak"></p>
+  \endcol
+  \begincol{.48\textwidth}
+
+
+![](images/RStudio.PNG){ width=100% }
+
+  \endcol
+\endcols
+
+## R manipule des vecteurs
+
+Plutôt que des nombres :
+
+```{r}
+x <- 1:5
+2 * x
+sqrt(x)
+```
+
+![](images/book-reader.png){ height=40px } Introduction à R et au tidyverse, [Prise en main](https://juba.github.io/tidyverse/02-prise_en_main.html)
+
+## Créer des vecteurs (1)
+
+Des valeurs :
+```{r}
+(x <- 1)
+(x <- c("pommes", "poires"))
+(x <- c(TRUE, FALSE))
+```
+
+## Créer des vecteurs (2)
+
+Une séquence :
+```{r}
+(x <- 1:5)
+(x <- seq(from = 1, to = 5, by = 1))
+```
+
+## Créer des vecteurs (3)
+
+Une répétition :
+```{r}
+(x <- rep(1, 5))
+(x <- rep(1:2, each = 2))
+```
+
+![](images/smile.png){ height=40px } Utiliser systématiquement l'aide
+```{r, eval=FALSE, tidy=FALSE}
+?rep
+```
+
+
+## Sélectionner des éléments (1)
+
+Utiliser les crochets :
+```{r}
+x <- (1:10) * 10
+x[3]
+x[-5]
+```
+
+Utiliser des vecteurs pour sélectionner :
+```{r}
+x[c(1, 3)]
+```
+
+## Tester des éléments
+
+Tirer des nombres dans une séquence, trouver lesquels sont pairs.
+```{r}
+x <- 1:100
+# Échantillonnage
+(y <- sample(x, 5))
+(y %% 2 == 0)
+```
+
+## Sélectionner des éléments (2)
+
+Utiliser les crochets :
+```{r}
+y[y %% 2 == 0]
+```
+
+Les compter :
+```{r}
+sum(y %% 2 == 0)
+```
+
+## Modes
+
+Les vecteurs contiennent des données de même mode :
+
+- numérique : `1:2`, `1L` (L pour un entier)
+- imaginaire : `(1 + 1i) * (1 - 1i)` égale 2
+- logique : `TRUE`
+- caractère : `"Bonjour"`
+- vide : `NULL`
+
+
+## Matrices
+
+Les matrices ont deux dimensions et contiennent des données de même mode
+
+```{r}
+(A <- matrix(1:9, nrow = 3))
+```
+
+## Sélectionner dans une matrice
+
+```{r}
+A[1, 2]
+A[, 3]
+```
+
+## Tableaux
+
+Extension des matrices à plus de deux dimensions
+```{r}
+A <- array(1:18, dim = c(3, 3, 2))
+A
+```
+
+## Sélectionner dans un tableau
+
+Comme dans une matrice :
+```{r}
+A[, , 2]
+```
+
+## Listes
+
+Eléments disparates :
+```{r}
+(L <- list(noms=c("X", "Y"), tailles = c(100, 120)))
+```
+
+## Sélectionner dans une liste
+
+Double crochet ou nom :
+```{r}
+L[[2]]
+L$noms
+```
+
+## Dataframe
+
+Tableau dont chaque colonne est de mode unique :
+```{r}
+(df <- data.frame(nom = c("X", "Y"), taille = c(100, 120)))
+```
+
+## Sélectionner dans un dataframe (1)
+
+Sélection comme dans une matrice...
+```{r}
+df[2, ]
+```
+
+... ou comme dans une liste
+```{r}
+df$taille
+```
+
+## Sélectionner dans un dataframe (2)
+
+Sélection de lignes en fonction de valeurs
+```{r}
+df[df$taille == 100, ]
+```
+
+
+# Fonctions
+
+## Définition
+
+R est un langage fonctionnel.
+```{r}
+y <- cos(pi)
+```
+
+Une fonction produit une valeur à partir d'arguments.
+
+## Effets de bord
+
+Une fonction peut avoir des effets de bord :
+```{r, out.width="20%"}
+x <- plot(y)
+x
+```
+
+`plot` n'est utilisé que pour ses effets de bord.
+
+## Arguments
+
+Appeler une fonction en nommant tous ses arguments...
+```{r}
+runif(n = 3, min = 0, max = 1)
+```
+
+... ou en les passant dans l'ordre :
+```{r}
+runif(3, 0, 1)
+```
+
+## Arguments nommés
+
+![](images/smile.png){ height=40px } Bonne pratique : nommer tous les arguments à partir du deuxième:
+```{r}
+runif(3, min = 0, max = 1)
+```
+
+## Valeurs par défaut
+
+Voir l'aide de la fonction : `?runif`
+
+`min` et `max` ont des valeurs par défaut : 0 et 1.
+```{r}
+runif(3)
+```
+
+## Créer 
+
+Syntaxe:
+```{r}
+puissance <- function(x, r = 1) {
+  return(x^r)
+}
+puissance(1:3, r = 2)
+```
+Penser vecteur.
+`r` est recyclé.
+
+```{r}
+puissance(1:3, r = 3:1)
+```
+
+
+# Structures de contrôle
+
+## Si / Sinon
+
+```{r}
+est_pair <- function(x) {
+  if (x %% 2 == 0) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
+est_pair(3)
+```
+
+![](images/bomb.png){ height=40px } Fonction non vectorielle. Utiliser plutôt :
+
+```{r}
+((1:3) %% 2) == 0
+```
+
+## Boucles
+
+```{r}
+for (i in 1:3) {
+  print(sqrt(i))
+}
+```
+![](images/bomb.png){ height=40px } Seulement si la fonction utilisée n'est pas vectorielle.
+```{r}
+sqrt(1:3)
+```
+
+# Graphiques de base
+
+## plot
+
+Graphiques simples :
+
+```{r, out.width="60%"}
+X <- 1:10
+Y <- 2 * X + rnorm(length(X))
+plot(x = X, y = Y)
+lines(x = X, y = Y, col = "green", lty = 2)
+abline(a = 0, b = 2, col = "red")
+```
+
+## Classes (1)
+
+Les objets appartiennent à des classes.
+```{r}
+Ns <- rlnorm(100)
+class(Ns)
+```
+
+`plot` est une méthode, déclinée par classe.
+```{r, out.width="40%"}
+plot(Ns) # plot.numeric()
+```
+
+## Classes (2)
+
+```{r, out.width="50%"}
+library("entropart")
+Ns <- as.AbdVector(Ns)
+class(Ns)
+plot(Ns) # plot.SpeciesDistribution
+```
+
+
+<!-- Styles for HTML slides -->
+<style>
+  /* Allow long bibliography */
+  .forceBreak { -webkit-column-break-after: always; break-after: column; }
+  slides > slide { overflow: scroll; }
+  slides > slide:not(.nobackground):after { content: ''; }
+
+  /* First page logo size */
+  .gdbar img {
+    width: 200px !important;
+    height: 55px !important;
+    margin: 8px 8px;
+  }
+  .gdbar {
+    width: 250px !important;
+    height: 70px !important;
+  }
+  
+  /* No logo on slides */
+  slides > slide:not(.nobackground):before {
+    display:none
+  }
+</style>
