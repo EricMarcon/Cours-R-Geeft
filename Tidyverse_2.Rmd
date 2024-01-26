@@ -329,7 +329,7 @@ Exemple:
 ```{r, out.width='50%', tidy=FALSE}
 library("entropart")
 rCommunity(1, size = 5000) |> 
-  autoplot(Distribution = "lnorm") + MyStyle
+  autoplot(Distribution = "lnorm") + style_nb
 ```
 
 ## Anti-sèche et extensions
