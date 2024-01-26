@@ -40,13 +40,48 @@ Statistiques univariées et lois de probabilité.
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/TP_2.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/TP_2.pdf)
 
 
-## Mise à niveau R 3/3
+## Le tidyverse 1/2
 
-Le tidyverse.
+Manipulation des données :
 
-Support de cours :
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Tidyverse_1.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Tidyverse_1.pdf)
+- [Introduction à R et au tidyverse](https://juba.github.io/tidyverse/) : Introduction au tidyverse.
 
-- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Mise_a_niveau_3.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Mise_a_niveau_3.pdf)
-- [Introduction à R et au tidyverse](https://juba.github.io/tidyverse/) : Introduction à R.
 
+## TP 3
+
+Importation des données et bagarre (data wrangling)
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/TP_3.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/TP_3.pdf)
+
+
+
+## Le tidyverse 2/2
+
+Visualisation des données :
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Tidyverse_2.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Tidyverse_2.pdf)
+
+
+
+## TP 4
+
+Visualisation des données :
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/TP_4.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/TP_4.pdf)
+- [Le package *sf* pour la géomatique](https://www.paulamoraga.com/book-spatial/the-sf-package-for-spatial-vector-data.html)
+
+
+## Contrôle de source
+
+Utilisation de git et Github:
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/git.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/git.pdf)
+
+
+## Rédiger avec R
+
+Production de documents reproductibles :
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Redaction.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Redaction.pdf)
 

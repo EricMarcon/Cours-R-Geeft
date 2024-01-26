@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>TP: statistiques univariées</title>
+  <title>TP: Data Wrangling</title>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -9,7 +9,7 @@
 
 
 
-  <meta name="date" content="2024-01-25" />
+  <meta name="date" content="2024-01-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,7 +20,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: 'TP: statistiques univariées',
+                title: 'TP: Data Wrangling',
                         useBuilds: true,
         usePrettify: true,
         enableSlideAreas: true,
@@ -3207,22 +3207,199 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">25 January 2024</p>
+            <p style="margin-top: 6px; margin-left: -2px;">26 January 2024</p>
           </hgroup>
   </slide>
 
-<slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Manipulation</h2></hgroup><article  id="manipulation">
+<slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Données</h2></hgroup><article  id="données">
 
-</article></slide><slide class=""><hgroup><h2>Tableaux croisés</h2></hgroup><article  id="tableaux-croisés">
+</article></slide><slide class=""><hgroup><h2>Principes</h2></hgroup><article  id="principes">
+
+<p>Les données sont obtenues selon un protocole clair et reproductible.</p>
+
+<p>Elles sont enregistrées dans des fichiers structurés :</p>
+
+<ul>
+<li>Données rectangulaires (<em>tidy</em>) ;</li>
+<li>Dans un tableur (Excel est le standard) ;</li>
+<li>Sans répétitions (principe DNRY) : un fichier par objet ;</li>
+<li>Sécurisés : plan de gestion des données pour la sauvegarde et l’archivage.</li>
+</ul>
+
+<p>Interdiction de modifier les données brutes après nettoyage.</p>
+
+</article></slide><slide class=""><hgroup><h2>Tableau Excel</h2></hgroup><article  id="tableau-excel">
+
+<p>Mesures de diamètres et hauteurs de Pins et Cèdres du Ventoux en 2020.</p>
+
+<p>Ouvrir &ldquo;data/Inv_GEEFT_Ventoux_09-2020.xlsx&rdquo;.</p>
+
+<p>Règles :</p>
+
+<ul>
+<li>une colonne par variable, une ligne par individu ;</li>
+<li>toutes les valeurs d’une variable sont de même type ;</li>
+<li>figer les volets pour simplifier le travail ;</li>
+<li>éventuellement, mettre sous forme de tableau ;</li>
+<li>formater les nombres pour la lisibilité, utiliser les filtres et tris librement ;</li>
+<li>pas de fusion de cellules, de surtitre,…</li>
+</ul>
+
+<p>Valider une version <em>définitive</em> du fichier venant du terrain (&ldquo;Données brutes&rdquo;).</p>
+
+</article></slide><slide class=""><hgroup><h2>Importation depuis Excel</h2></hgroup><article  id="importation-depuis-excel">
+
+<p>Possible mais pas standard parce que le fichier de données est binaire.</p>
 
 <p></p>
 
-<pre class = 'prettyprint lang-r'>table(hdv2003$sexe, hdv2003$cuisine)</pre>
+<pre class = 'prettyprint lang-r'>library(&quot;readxl&quot;)
+read_excel(&quot;data/Inv_GEEFT_Ventoux_09-2020.xlsx&quot;) |&gt; 
+  print() -&gt; 
+  ventoux_excel</pre>
 
-<pre >##        
-##         Non Oui
-##   Homme 629 270
-##   Femme 490 611</pre>
+<pre >## # A tibble: 223 × 3
+##   Espèce `Diamètre (cm)` `Hauteur réelle (m)`
+##   &lt;chr&gt;            &lt;dbl&gt;                &lt;dbl&gt;
+## 1 P                 16.5                14.8 
+## 2 P                 13                  11.2 
+## 3 P                 23.8                 8.71
+## 4 C                 16.5                 8.9 
+## 5 P                 35                  21.4 
+## # ℹ 218 more rows</pre>
+
+<p></p>
+
+</article></slide><slide class=""><hgroup><h2>Fichiers CSV</h2></hgroup><article  id="fichiers-csv">
+
+<p>Texte séparé par des virgules en anglais. Pour les pays latins, la virgule est le séparateur décimal : le séparateur de colonne devient le point-virgule.</p>
+
+<p>Conserver le fichier Excel dans les archives de terrain et exporter les données dans le projet R :</p>
+
+<ul>
+<li>Fichier &gt; Enregistrer sous… : CSV UTF-8.</li>
+<li>Fermer Excel pour déverrouiller le fichier.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Importation de CSV</h2></hgroup><article  id="importation-de-csv">
+
+<p>Dans le tidyverse, utiliser <code>read_csv()</code> ou <code>read_csv2()</code>.</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>read_csv2(&quot;data/Inv_GEEFT_Ventoux_09-2020.csv&quot;) |&gt; 
+  print() -&gt; 
+  ventoux</pre>
+
+<pre >## # A tibble: 223 × 3
+##   Espèce `Diamètre (cm)` `Hauteur réelle (m)`
+##   &lt;chr&gt;            &lt;dbl&gt;                &lt;dbl&gt;
+## 1 P                 16.5                14.8 
+## 2 P                 13                  11.2 
+## 3 P                 23.8                 8.71
+## 4 C                 16.5                 8.9 
+## 5 P                 35                  21.4 
+## # ℹ 218 more rows</pre>
+
+<p></p>
+
+</article></slide><slide class=""><hgroup><h2>Nettoyage</h2></hgroup><article  id="nettoyage">
+
+<p>Les noms de colonnes doivent être des noms d’objets R valides pour simplifier le code :</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'># Hauteur moyenne, difficile à manipuler
+ventoux$`Hauteur réelle (m)` |&gt; mean()</pre>
+
+<pre >## [1] 14.88399</pre>
+
+<p></p>
+
+<p>Renommer les colonnes:</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>ventoux |&gt; 
+  rename(
+    espece = Espèce, 
+    diametre = `Diamètre (cm)`, 
+    hauteur = `Hauteur réelle (m)`
+  ) |&gt; 
+  print() -&gt; 
+  ventoux</pre>
+
+<pre >## # A tibble: 223 × 3
+##   espece diametre hauteur
+##   &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 P          16.5   14.8 
+## 2 P          13     11.2 
+## 3 P          23.8    8.71
+## 4 C          16.5    8.9 
+## 5 P          35     21.4 
+## # ℹ 218 more rows</pre>
+
+<p></p>
+
+</article></slide><slide class=""><hgroup><h2>Nettoyage</h2></hgroup><article  id="nettoyage-1">
+
+<p>Les noms des espèces ne sont pas clairs.</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>ventoux |&gt; 
+  mutate(
+    espece = case_match(
+      espece, 
+      &quot;P&quot; ~ &quot;Pin&quot;,
+      &quot;C&quot; ~ &quot;Cèdre&quot;
+    )
+  ) |&gt; 
+  print() -&gt; 
+  ventoux</pre>
+
+<pre >## # A tibble: 223 × 3
+##   espece diametre hauteur
+##   &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 Pin        16.5   14.8 
+## 2 Pin        13     11.2 
+## 3 Pin        23.8    8.71
+## 4 Cèdre      16.5    8.9 
+## 5 Pin        35     21.4 
+## # ℹ 218 more rows</pre>
+
+<p></p>
+
+</article></slide><slide class=""><hgroup><h2>Fin du nettoyage</h2></hgroup><article  id="fin-du-nettoyage">
+
+<p>A ce stade, l’objet <code>ventoux</code> est nettoyé : il ne devra plus être modifié.</p>
+
+<p>\(\to\) Réécrire le pipleline complet.</p>
+
+<p>Les traitements ultérieurs devront créer de nouveaux objets.</p>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Transformation</h2></hgroup><article  id="transformation">
+
+</article></slide><slide class=""><hgroup><h2>Ajout d’une colonne</h2></hgroup><article  id="ajout-dune-colonne">
+
+<p>Calculer la surface terrière.</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>ventoux |&gt; 
+  mutate(G = diametre^2 * pi /40000) |&gt;
+  print() -&gt;
+  ventoux_g</pre>
+
+<pre >## # A tibble: 223 × 4
+##   espece diametre hauteur      G
+##   &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Pin        16.5   14.8  0.0214
+## 2 Pin        13     11.2  0.0133
+## 3 Pin        23.8    8.71 0.0445
+## 4 Cèdre      16.5    8.9  0.0214
+## 5 Pin        35     21.4  0.0962
+## # ℹ 218 more rows</pre>
 
 <p></p>
 
