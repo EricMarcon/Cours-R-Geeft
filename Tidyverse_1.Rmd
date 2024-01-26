@@ -1,0 +1,440 @@
+---
+title: "Tidyverse : Manipulation des données"
+author: "Eric Marcon"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+url: https://EricMarcon.github.io/Cours-R-Geeft/
+github-repo: EricMarcon/Cours-R-Geeft
+bibliography: references.bib
+biblio-style: chicago
+urlcolor: blue
+output:
+  bookdown::beamer_presentation2:
+    latex_engine: xelatex
+    includes:
+      in_header: latex/header.tex
+    citation_package: natbib
+    slide_level: 2
+    df_print: default
+    number_sections: no
+    toc: no
+    fig_caption: no
+    keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
+---
+
+```{r}
+#| label: DoNotModify
+#| include: false
+### Utilities. Do not modify.
+# Installation of packages if necessary
+InstallPackages <- function(Packages) {
+  InstallPackage <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {
+      install.packages(Package, repos = "https://cran.rstudio.com/")
+    }
+  }
+  invisible(sapply(Packages, InstallPackage))
+}
+
+# Basic packages
+InstallPackages(c("bookdown", "formatR", "kableExtra", "ragg"))
+
+# kableExtra must be loaded 
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "docx") {
+  # Word output (https://stackoverflow.com/questions/35144130/in-knitr-how-can-i-test-for-if-the-output-will-be-pdf-or-word)
+  # Do not use autoformat (https://github.com/haozhu233/kableExtra/issues/308)
+  options(kableExtra.auto_format = FALSE)
+}
+library("kableExtra")
+
+# Chunk font size hook: allows size='small' or any valid Latex font size in chunk options
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r}
+#| label: Options
+#| include: false
+### Customized options for this document
+# Add necessary packages here
+Packages <- c("tidyverse", "entropart")
+# Install them
+InstallPackages(Packages)
+
+# knitr options
+knitr::opts_chunk$set(
+  cache =   TRUE,     # Cache chunk results
+  include = TRUE,     # Show/Hide chunks
+  echo =    TRUE,     # Show/Hide code
+  warning = FALSE,    # Show/Hide warnings
+  message = FALSE,    # Show/Hide messages
+  # Figure alignment and size
+  fig.align = 'center', out.width = '80%',
+  # Graphic devices (ragg_png is better than standard png)
+  dev = c("ragg_png", "pdf"),
+  # Code chunk format
+  tidy = FALSE, tidy.opts = list(blank = FALSE, width.cutoff = 50),
+  size = "scriptsize", knitr.graphics.auto_pdf = TRUE
+)
+options(width = 50)
+
+# ggplot style
+library("tidyverse")
+theme_set(theme_bw())
+theme_update(
+  panel.background = element_rect(fill = "transparent", colour = NA),
+  plot.background = element_rect(fill = "transparent", colour = NA)
+)
+knitr::opts_chunk$set(dev.args = list(bg = "transparent"))
+
+# Tibbles: 5 lines, fit to slide width
+options(tibble.print_min = 5, tibble.width = 50)
+
+# Random seed
+set.seed(973)
+```
+
+
+# Manifeste
+
+## Approche complète de l'analyse de données
+
+Données bien rangées (_tidy_).
+
+Enchaînement des opérations (`|>` de _magrittr_, `+` de _ggplot2_).
+
+Programmation fonctionnelle (pas orientée objet), optimisée pour les utilisateurs (lisibilité plutôt que performance).
+
+```{r, eval=FALSE}
+library("tidyverse")
+vignette("manifesto", package="tidyverse")
+```
+
+Ensemble de packages, appelés par _tidyverse_
+
+
+## Données rectangulaires
+
+Modèle du dataframe : une ligne par observation, une colonne par attribut.
+
+Dataframe optimisé : `tibble`.
+
+Documentation : `vignette("tibble", package="tibble")`.
+
+```{r}
+ggplot2::diamonds
+```
+
+## Pipe (tuyau)
+
+Le package _magrittr_ introduit le pipe `%>%` (`Ctrl+Shift + m`).
+
+```{r}
+#| echo: false
+#| out.width: 40%
+knitr::include_graphics(c("images/magritte.jpg", "images/magrittr.jpg"))
+```
+
+Modèle du pipeline de la programmation système repris par la bioinformatique.
+
+## Pipe (tuyau)
+
+Exemple :
+```{r}
+1:10 %>% sum()
+```
+
+Principe : les données résultant d'un calcul sont passées à la fonction suivante.
+
+Enchaînement :
+```{r}
+1:10 %>% sqrt() %>% sum()
+```
+
+Code plus lisible que `sum(sqrt(1:10))`.
+
+
+## Autres opérateurs
+
+Tuyau avec retour :
+```{r, message=FALSE}
+library("magrittr")
+x <- c(4,9)
+x %<>% sqrt()
+x
+```
+Embranchement :
+```{r, out.width='5%'}
+x %T>% plot %>% sum
+```
+
+## Autres opérateurs
+
+Exposition :
+```{r}
+diamonds %$% mean(price)
+# Équivalent à 
+diamonds %>% pull(price) %>% mean()
+```
+
+Le tuyau de base est accessible sans charger *magrittr*.
+
+Les autres sont peu utilisés, à éviter.
+
+
+## Pipe natif
+
+L'opérateur tuyau a été intégré à R à partir de la version 4.1.
+
+Sa syntaxe est `|>`.
+Il est pratiquement identique à `%>%` mais ne nécessite pas de charger *dplyr* ou *magrittr*.
+
+Dans R Studio, choisir dans "Tools > Global Options > Code" : cocher ou non "Use native pipe operator".
+
+
+## Méthode de travail
+
+
+Bagarre (_Wrangling_) :
+
+- Importation des données ;
+- Nettoyage (_Tidy_) ;
+- Transformation.
+
+Visualisation.
+
+
+Communication : RMarkdown et sorties graphiques. 
+Lire :
+
+- [Graphics for communication](https://r4ds.hadley.nz/communication.html)
+- [Top 50 ggplot2 Visualizations](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html)
+
+
+# Bagarre
+
+## Package _readr_
+
+Lecture de fichiers texte variés.
+
+Importation dans un tibble.
+
+[Référence](https://r4ds.hadley.nz/data-import.html)
+
+
+## Fichier csv
+
+Fonctions `read_csv()` et `read_csv2()`
+
+Remplacent `read.csv()` et `read.csv2()` de base
+
+Plus rapide que les fonctions originales.
+
+
+## Rangement
+
+
+```{r, echo=FALSE, out.width='90%'}
+knitr::include_graphics("images/tidy-1.png")
+```
+
+Approche habituelle en écologie (analyse multivariée par exemple)
+
+Si les données sont mal rangées ("pas tidy"), quelques manipulations de base.
+
+[Référence](https://r4ds.hadley.nz/data-tidy.html)
+
+
+## Exemple
+
+Données : inventaire d'une parcelle de Paracou, 4 carrés distincts.
+
+Lire les données :
+
+```{r}
+paracou6 <- read_csv2("data/Paracou6.csv")
+```
+
+- Afficher paracou6
+
+
+## Rassemblement (_unite_)
+
+Famille, genre et espèce des arbres sont dans 3 colonnes.
+
+Créer une colonne avec le nom complet de l'espèce.
+
+```{r, tidy=FALSE}
+paracou6 |> 
+  unite(col = spName, Family, Genus, Species, remove = FALSE) ->
+  paracou6
+```
+
+- Afficher le résultat.
+
+Le pipeline `|>` (`Ctrl + Shift + m`) passe la donnée à la fonction suivante.
+L'affectation finale `->` enregistre le résultat.
+
+La commande classique est :
+```{r, eval=FALSE}
+paracou6 <- unite(data = paracou6, col = spName, 
+                  Family, Genus, Species, remove = FALSE)
+```
+
+
+## Séparation (_separate_)
+
+Opération contraire
+
+```{r, echo=FALSE, out.width='100%'}
+knitr::include_graphics("images/tidy-17.png")
+```
+
+
+## Rassembler des colonnes (*pivot_longer*)
+
+Opération inverse de la création d'un tableau croisé
+
+```{r, echo=FALSE, out.width='100%'}
+knitr::include_graphics("images/tidy-9.png")
+```
+
+
+## Séparer des colonnes (*pivot_wider*)
+
+Crée une colonne par modalité d'une variable
+
+```{r, echo=FALSE, out.width='90%'}
+knitr::include_graphics("images/tidy-8.png")
+```
+
+
+## Valeurs manquantes
+
+Les valeurs manquantes explicites (valeur `NA`) peuvent être conservées dans les manipulations ou simplement supprimées avec l'option `na.rm=TRUE`.
+
+`complete(var1, var2)` ajoute des enregistrements pour toutes les combinaisons de var1 et var2 manquantes.
+
+
+[Référence](https://r4ds.hadley.nz/missing-values)
+
+
+## Transformation
+
+Outils du package _dplyr_
+
+Idée :
+
+- enchaîner les opérations de transformation avec les `|>` ;
+- les écrire et les tester une à une.
+
+
+## Filtrer les lignes (_filter_)
+
+Filtrer par des conditions sur les différentes variables
+
+```{r}
+# Nombre de lignes
+paracou6 |> count() |> pull()
+# Après filtrage
+paracou6 |> filter(SubPlot == 1) |> count() |> pull()
+```
+
+Remarquer : `pull()`qui extrait la valeur finale du tibble de taille 1x1 produit par `count()`.
+
+
+## Sélectionner les colonnes (_select_)
+
+Ne retenir que les colonnes intéressantes
+
+```{r}
+paracou6 |> 
+  select(SubPlot:Yfield, Family:Species, CircCorr) |> 
+  ncol()
+```
+
+Remarquer : `ncol()` est une fonction de _base_, pas du tidyverse.
+
+
+## Ajouter des variables calculées (_mutate_)
+
+Des colonnes sont ajoutées au tibble
+
+```{r}
+paracou6 |> 
+  select(idTree, CircCorr) |> 
+  mutate(Diametre = CircCorr/pi) |> 
+  print() -> 
+  paracou6_diam
+
+```
+
+
+## Trier les lignes (_arrange_)
+
+Afficher les plus gros arbres de la parcelle :
+
+```{r}
+paracou6_diam |> arrange(desc(CircCorr))
+```
+
+## Regrouper et résumer
+
+Quel est le diamètre moyen des arbres par famille ?
+```{r}
+paracou6 |> 
+  group_by(Family) |> 
+  summarise(diam_mean = mean(CircCorr) / pi, trees_n = n()) |> 
+  arrange(desc(diam_mean))
+```
+
+## Lier deux tables
+
+`bind_cols()` et `bindrows()`.
+
+```{r}
+t1 <- tibble(col2 = c("A", "B"), col3 = 3:4)
+tibble(col1 = 1:2) |> bind_cols(t1)
+```
+
+Équivalent de `cbind()` et `rbind()`
+
+## Joindre deux tables
+
+`inner_join()`, `left_join()`, `right_join()` et `full_join()`
+
+```{r}
+tibble(col2 = c("B", "C"), col5 = 5:6) |> inner_join(t1)
+```
+
+
+
+
+<!-- Styles for HTML slides -->
+<style>
+  /* Allow long bibliography */
+  .forceBreak { -webkit-column-break-after: always; break-after: column; }
+  slides > slide { overflow: scroll; }
+  slides > slide:not(.nobackground):after { content: ''; }
+
+  /* First page logo size */
+  .gdbar img {
+    width: 200px !important;
+    height: 55px !important;
+    margin: 8px 8px;
+  }
+  .gdbar {
+    width: 250px !important;
+    height: 70px !important;
+  }
+  
+  /* No logo on slides */
+  slides > slide:not(.nobackground):before {
+    display:none
+  }
+</style>

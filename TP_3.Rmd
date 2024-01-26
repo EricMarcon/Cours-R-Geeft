@@ -1,5 +1,5 @@
 ---
-title: "TP: statistiques univariées"
+title: "TP: Data Wrangling"
 author: "Eric Marcon"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 url: https://EricMarcon.github.io/Cours-R-Geeft/
@@ -8,9 +8,6 @@ bibliography: references.bib
 biblio-style: chicago
 urlcolor: blue
 output:
-  bookdown::ioslides_presentation2:
-    logo: images/logo.png
-    widescreen: true
   bookdown::beamer_presentation2:
     latex_engine: xelatex
     includes:
@@ -22,6 +19,9 @@ output:
     toc: no
     fig_caption: no
     keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
 ---
 
 ```{r}
@@ -63,9 +63,8 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 ### Customized options for this document
 # Add necessary packages here
 Packages <- c(
-  "tidyverse", 
-  "GoFKernel",
-  "questionr"
+  "tidyverse",
+  "readxl"
 )
 # Install them
 InstallPackages(Packages)
@@ -104,14 +103,134 @@ set.seed(973)
 ```
 
 
-# Manipulation
+# Données
 
-## Tableaux croisés
+## Principes
+
+Les données sont obtenues selon un protocole clair et reproductible.
+
+Elles sont enregistrées dans des fichiers structurés :
+
+- Données rectangulaires (*tidy*) ;
+- Dans un tableur (Excel est le standard) ;
+- Sans répétitions (principe DNRY) : un fichier par objet ;
+- Sécurisés : plan de gestion des données pour la sauvegarde et l'archivage.
+
+Interdiction de modifier les données brutes après nettoyage.
+
+
+## Tableau Excel
+
+Mesures de diamètres et hauteurs de Pins et Cèdres du Ventoux en 2020.
+
+Ouvrir "data/Inv_GEEFT_Ventoux_09-2020.xlsx".
+
+Règles :
+
+- une colonne par variable, une ligne par individu ;
+- toutes les valeurs d'une variable sont de même type ;
+- figer les volets pour simplifier le travail ;
+- éventuellement, mettre sous forme de tableau ;
+- formater les nombres pour la lisibilité, utiliser les filtres et tris librement ;
+- pas de fusion de cellules, de surtitre,...
+
+Valider une version *définitive* du fichier venant du terrain ("Données brutes").
+
+
+## Importation depuis Excel
+
+Possible mais pas standard parce que le fichier de données est binaire.
 
 ```{r}
-table(hdv2003$sexe, hdv2003$cuisine)
+library("readxl")
+read_excel("data/Inv_GEEFT_Ventoux_09-2020.xlsx") |> 
+  print() -> 
+  ventoux_excel
 ```
 
+## Fichiers CSV
+
+Texte séparé par des virgules en anglais.
+Pour les pays latins, la virgule est le séparateur décimal : le séparateur de colonne devient le point-virgule.
+
+Conserver le fichier Excel dans les archives de terrain et exporter les données dans le projet R :
+
+- Fichier > Enregistrer sous... : CSV UTF-8.
+- Fermer Excel pour déverrouiller le fichier.
+
+
+## Importation de CSV
+
+Dans le tidyverse, utiliser `read_csv()` ou `read_csv2()`.
+
+```{r}
+read_csv2("data/Inv_GEEFT_Ventoux_09-2020.csv") |> 
+  print() -> 
+  ventoux
+```
+
+## Nettoyage
+
+Les noms de colonnes doivent être des noms d'objets R valides pour simplifier le code :
+
+```{r}
+# Hauteur moyenne, difficile à manipuler
+ventoux$`Hauteur réelle (m)` |> mean()
+```
+
+Renommer les colonnes:
+
+```{r}
+ventoux |> 
+  rename(
+    espece = Espèce, 
+    diametre = `Diamètre (cm)`, 
+    hauteur = `Hauteur réelle (m)`
+  ) |> 
+  print() -> 
+  ventoux
+```
+
+
+## Nettoyage
+
+Les noms des espèces ne sont pas clairs.
+
+```{r}
+ventoux |> 
+  mutate(
+    espece = case_match(
+      espece, 
+      "P" ~ "Pin",
+      "C" ~ "Cèdre"
+    )
+  ) |> 
+  print() -> 
+  ventoux
+```
+
+## Fin du nettoyage
+
+A ce stade, l'objet `ventoux` est nettoyé : il ne devra plus être modifié.
+
+$\to$ Réécrire le pipleline complet.
+
+Les traitements ultérieurs devront créer de nouveaux objets.
+
+
+# Transformation
+
+## Ajout d'une colonne
+
+Calculer la surface terrière.
+
+
+```{r}
+ventoux |> 
+  mutate(G = diametre^2 * pi /40000) |>
+  print() ->
+  ventoux_g
+```
 
 
 

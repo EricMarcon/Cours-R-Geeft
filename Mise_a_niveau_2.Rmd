@@ -430,6 +430,8 @@ plot(Ns) # plot.SpeciesDistribution
 ```
 
 
+
+
 <!-- Styles for HTML slides -->
 <style>
   /* Allow long bibliography */

@@ -415,7 +415,10 @@ tv_sd <- sd(hdv2003$heures.tv, na.rm = TRUE)
 ci <- qt(1 - alpha / 2, df = n - 1) * tv_sd / sqrt(n)
 paste("Intervalle de confiance:", tv_mean - ci, "-", tv_mean + ci)
 ```
-On regarde la TV plus de 2 heures par jour (95% de confiance)
+
+On regarde la TV plus de 2 heures par jour (95% de confiance).
+
+
 
 
 <!-- Styles for HTML slides -->

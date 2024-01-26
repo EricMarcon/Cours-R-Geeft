@@ -1,5 +1,5 @@
 ---
-title: "TP 1: Scripts et Blocs-note"
+title: "TP: ggplot"
 author: "Eric Marcon"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 url: https://EricMarcon.github.io/Cours-R-Geeft/
@@ -8,9 +8,6 @@ bibliography: references.bib
 biblio-style: chicago
 urlcolor: blue
 output:
-  bookdown::ioslides_presentation2:
-    logo: images/logo.png
-    widescreen: true
   bookdown::beamer_presentation2:
     latex_engine: xelatex
     includes:
@@ -22,6 +19,9 @@ output:
     toc: no
     fig_caption: no
     keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
 ---
 
 ```{r}
@@ -63,7 +63,8 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 ### Customized options for this document
 # Add necessary packages here
 Packages <- c(
-  "tidyverse"
+  "tidyverse", 
+  "sf"
 )
 # Install them
 InstallPackages(Packages)
@@ -102,75 +103,107 @@ set.seed(973)
 ```
 
 
-# Script
+# Ventoux
 
-## Créer un script
+## Données
 
-Créer un projet RStudio.
-Toujours travailler dans un projet.
-
-Menu "File > New File > R Script"
-
-Ecrire du code, l'exécuter.
-
-Le commenter.
-
-## Sauvegarder
-
-Fermer RStudio sans sauvegarder, puis relancer RStudio.
-
-Que se passe-t-il ?
-
-Sauvegarder le script.
-
-
-# R Markdown
-
-## Bloc-Note
-
-Menu "File > New File > R Notebook"
-
-Tricoter
-
-Ajouter un bout de code.
-
-Comprendre le [pipeline de travail](https://ericmarcon.github.io/memoiR/articles/LaTeX.html).
-
-Choisir la langue du vérificateur d'orthographe ("Tools > Project Options...> Spelling).
+```{r}
+read_csv2("data/Inv_GEEFT_Ventoux_09-2020.csv") |> 
+  rename(
+    espece = Espèce, 
+    diametre = `Diamètre (cm)`, 
+    hauteur = `Hauteur réelle (m)`
+  ) |> 
+  mutate(
+    espece = case_match(
+      espece, 
+      "P" ~ "Pin",
+      "C" ~ "Cèdre"
+    )
+  ) ->
+  ventoux
+```
 
 
-## Possibilités
+## Graphique hauteur ~ diamètre
 
-Rédaction de documents reproductibles.
-
-Format multiple pour le même contenu : HTML, PDF (via LaTeX), Word...
-
-Pas de perte de temps pour le formatage en utilisant des [modèles](https://ericmarcon.github.io/memoiR/).
-
-Possibilité d'intégration continue sur GitHub: [exemple](https://github.com/EricMarcon/JTE-22-105).
-
-
-## Quarto
-
-Menu "File > New File > Quarto document..."
-
-Cliquer sur "Create".
-
-[Installer Quarto](https://quarto.org/docs/get-started/).
-
-Cliquer sur "Render" pour produire le document.
-
-Différences entre RMarkdown / bookdown et Quarto.
+```{r}
+#| out.width: 70%
+ventoux |> 
+  ggplot(aes(x= diametre, y = hauteur)) +
+  geom_point(aes(col = espece)) +
+  geom_smooth(method = "lm")
+```
 
 
-## Conclusion
+## Esthétique
 
-Créez un projet R pour ce cours.
+Comparer avec 
 
-Copiez-y le contenu du cours ([zip à télécharger](https://github.com/EricMarcon/Cours-R-Geeft)): cliquer sur bouton vert.
+```{r}
+#| out.width: 70%
+ventoux |> 
+  ggplot(aes(x= diametre, y = hauteur, col = espece)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
 
-Créez un document Quarto pour y prendre vos notes.
 
+# Paracou
+
+## Données
+
+```{r}
+read_csv2("data/Paracou6.csv") |> 
+  unite(
+    # Nouvelle colonne
+    col = spName, 
+    # Champs concaténés
+    Genus, Species, 
+    # Séparateur
+    sep = " ",
+    # Conserver les colonnes d'origine
+    remove = FALSE
+  ) ->
+  paracou6
+  
+```
+
+$\to$ Examiner paracou6
+
+
+## Carte des Wapa
+
+Objectif : cartographier les Wapas (genre : Eperua) par espèces
+
+- Filter le genre Eperua ;
+- Ajouter une colonne pour la surface terrière ;
+- Sélectionner les colonnes contenant le nom de l'espèce, la position et la surface terrière
+
+
+## Bagarre
+
+```{r}
+paracou6 |> 
+  filter(Genus == "Eperua") |> 
+  mutate(G = (CircCorr / 2 / pi)^2 * pi / 10000 ) |> 
+  select(Xfield, Yfield, spName, G) |> 
+  print() ->
+  paracou6_wapa
+```
+
+## Carte
+
+```{r}
+library("sf")
+paracou6_wapa |> 
+  st_as_sf(coords = c("Xfield", "Yfield")) |> 
+  ggplot() +
+  geom_sf(
+    aes(col = spName, size = G)
+  ) +
+  labs(col = "Espèce")
+```
 
 
 
