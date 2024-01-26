@@ -70,3 +70,18 @@ Visualisation des données :
 
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/TP_4.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/TP_4.pdf)
 - [Le package *sf* pour la géomatique](https://www.paulamoraga.com/book-spatial/the-sf-package-for-spatial-vector-data.html)
+
+
+## Contrôle de source
+
+Utilisation de git et Github:
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/git.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/git.pdf)
+
+
+## Rédiger avec R
+
+Production de documents reproductibles :
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Redaction.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Redaction.pdf)
+

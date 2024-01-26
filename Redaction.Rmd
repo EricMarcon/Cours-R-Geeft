@@ -1,0 +1,415 @@
+---
+title: "Rédiger avec R"
+author: "Eric Marcon"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+url: https://EricMarcon.github.io/Cours-R-Geeft/
+github-repo: EricMarcon/Cours-R-Geeft
+bibliography: references.bib
+biblio-style: chicago
+urlcolor: blue
+output:
+  bookdown::beamer_presentation2:
+    latex_engine: xelatex
+    includes:
+      in_header: latex/header.tex
+    citation_package: natbib
+    slide_level: 2
+    df_print: default
+    number_sections: no
+    toc: no
+    fig_caption: no
+    keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
+---
+
+```{r}
+#| label: DoNotModify
+#| include: false
+### Utilities. Do not modify.
+# Installation of packages if necessary
+InstallPackages <- function(Packages) {
+  InstallPackage <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {
+      install.packages(Package, repos = "https://cran.rstudio.com/")
+    }
+  }
+  invisible(sapply(Packages, InstallPackage))
+}
+
+# Basic packages
+InstallPackages(c("bookdown", "formatR", "kableExtra", "ragg"))
+
+# kableExtra must be loaded 
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "docx") {
+  # Word output (https://stackoverflow.com/questions/35144130/in-knitr-how-can-i-test-for-if-the-output-will-be-pdf-or-word)
+  # Do not use autoformat (https://github.com/haozhu233/kableExtra/issues/308)
+  options(kableExtra.auto_format = FALSE)
+}
+library("kableExtra")
+
+# Chunk font size hook: allows size='small' or any valid Latex font size in chunk options
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r}
+#| label: Options
+#| include: false
+### Customized options for this document
+# Add necessary packages here
+Packages <- c(
+  "tidyverse", 
+  "devEMF",
+  "memoiR",
+  "tinytex"
+)
+# Install them
+InstallPackages(Packages)
+
+# knitr options
+knitr::opts_chunk$set(
+  cache =   TRUE,     # Cache chunk results
+  include = TRUE,     # Show/Hide chunks
+  echo =    TRUE,     # Show/Hide code
+  warning = FALSE,    # Show/Hide warnings
+  message = FALSE,    # Show/Hide messages
+  # Figure alignment and size
+  fig.align = 'center', out.width = '80%',
+  # Graphic devices (ragg_png is better than standard png)
+  dev = c("ragg_png", "pdf"),
+  # Code chunk format
+  tidy = FALSE, tidy.opts = list(blank = FALSE, width.cutoff = 50),
+  size = "scriptsize", knitr.graphics.auto_pdf = TRUE
+)
+options(width = 50)
+
+# ggplot style
+library("tidyverse")
+theme_set(theme_bw())
+theme_update(
+  panel.background = element_rect(fill = "transparent", colour = NA),
+  plot.background = element_rect(fill = "transparent", colour = NA)
+)
+knitr::opts_chunk$set(dev.args = list(bg = "transparent"))
+
+# Tibbles: 5 lines, fit to slide width
+options(tibble.print_min = 5, tibble.width = 50)
+
+# Random seed
+set.seed(973)
+```
+
+
+# Ecrire avec RMarkdown
+
+## Principes
+
+Markdown est un format d'écriture très simple et lisible.
+
+[knitR](https://yihui.name/knitr/) exécute le code R à l'intérieur des documents, produit les résultats et les figures puis appelle RMarkdown ou Quarto.
+
+[RMarkdown](https://rmarkdown.rstudio.com/) importe Markdown dans R et [Bookdown](https://bookdown.org/yihui/bookdown/) étend RMarkdown pour produire des documents au format Markdown strict.
+
+[Quarto](https://quarto.org/) est un programme indépendant de R qui joue le même rôle que Bookdown.
+
+[Pandoc](https://pandoc.org/) convertit les documents Markdown en HTML, LaTeX (à compiler en PDF), Word...
+
+
+
+## Document RMarkdown simple
+
+Dans RStudio : _File_ / _New File_ / _R Markdown_...
+
+```{r}
+#| echo: false
+knitr::include_graphics("images/Nouveau-rmd1.png")
+```
+
+
+## Syntaxe
+
+Etudier le modèle :
+
+- En-tête YAML et premier bout de code ;
+
+- Formatage du texte ;
+
+- Bouts de code.
+
+[Anti-sèche](https://rmarkdown.rstudio.com/articles.html).
+
+
+## Tricotage
+
+- Tester les 3 formats : HTML, PDF, Word.
+
+PDF nécessite LaTeX, à installer par [tinytex](https://yihui.org/tinytex/).
+
+```{r}
+#| eval: false
+library("tinytex")
+install_tinytex(bundle = "TinyTeX")
+```
+
+
+Le même document peut être utilisé sous différents format sans réécriture.
+
+
+## Modèles
+
+Des packages fournissent des modèles.
+
+```{r}
+#| echo: false
+knitr::include_graphics("images/Nouveau-rmd2.png")
+```
+
+
+## Modèles memoiR
+
+Article simple : HTML pour un partage rapide, PDF simple.
+
+Article stylé : PDF pour l'autoarchivage et HTML pour la lecture. Word possible.
+
+Présentation : Beamer et HTML (utiliser _ioslides_).
+
+Mémoire (Mémoire de master, Thèse, HDR, livre) : PDF et HTML.
+
+[Gallerie](https://ericmarcon.github.io/memoiR/)
+
+Documentation dans les modèles.
+
+
+## Méthode de travail
+
+Un projet R contient tout :
+
+- Modèle de document ; Fichiers nécessaire à la mise en forme (styles de texte, de bibliographie, ...) ;
+
+- Données ; Code R pour produire les résultats, y compris les figures ;
+
+- Figures additionnelles.
+
+
+Ce n'est pas un package :
+
+- Un package a une organisation formelle inutile pour un article.
+
+
+## Création du projet
+
+Utiliser l'assistant _New Project /New Directory / Document Project using memoiR_.
+
+Tricoter pour vérifier le fonctionnement.
+
+Possibilité de tricoter en HTML pour gagner du temps.
+
+
+## Données
+
+Placer les données dans le projet, dans un format lisible par R (typiquement, CSV).
+
+Lire les données dans le préambule de l'article.
+
+
+## Calculs et figures
+
+Placer les calculs dans des bouts de code dans la section Matériels et Méthodes.
+
+Utiliser les options des bouts de code :
+
+- `echo` : affichage du code dans l'article (FALSE pour la publication) ;
+
+- `cache` : pour ne pas répéter les calculs à chaque compilation.
+
+Les figures sont produites directement par le code :
+
+- insérer les bouts de code contenant les commandes `plot` dans la section _Résultats_.
+
+
+
+## Bibliographie
+
+Utiliser sa bibliographie générale, produite par Zotero et Better Bibtex :
+
+- Pas de perte de temps pendant la rédaction ;
+
+- Exportation en temps réel de la bibliographie du projet.
+
+
+Ou utiliser directement une bibliographie spécifique, dans un fichier bib autonome.
+
+Voir la [Documentation](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html).
+
+
+
+## Séparer l'atelier et le magasin
+
+Modèles sauf _memoir_ :
+
+- Tricoter aux formats PDF et HTML.
+- Exécuter `memoiR::build_githubpages()`.
+
+Les fichiers produits (PDF, HTML, libs) sont déplacés dans /_docs._
+
+Le fichier /README.md est dupliqué dans /_docs_.
+
+Modèle _memoir_ : _Build Book_ tricote tout dans /_docs_.
+
+
+## Collaboration
+
+Passer le projet sous Git et le pousser sur GitHub.
+
+Ajouter des collaborateurs.
+
+
+## Présentation
+
+Activer les pages web du dépôt GitHub :
+
+- Settings, GitHub Pages :
+
+    - Source = Master Branch / docs Folder
+    
+    - choisir un thème.
+
+## Présentation
+
+Dans README.md, ajouter les liens vers les fichiers produits :
+
+- HTML pour la lecture en ligne ;
+
+- PDF pour le téléchargement.
+
+
+
+# Intégration continue
+
+## Objectifs
+
+Sous-traiter à GitHub Actions (service en ligne) la construction des documents
+
+Permet une mise à jour en continu, à chaque push.
+
+## Moyens
+
+Entrer les secrets du projet : jeton Github et adresse de messagerie.
+
+Créer le script : `memoiR::build_ghworkflow()`
+
+Pages GitHub sur la branche `gh-pages`
+
+
+# Figures pour la publication
+
+## Principes
+
+Produire des figures à utiliser hors des documents Markdown.
+
+Continuité entre l'analyse de données et la production de figures.
+
+Eviter les copier-coller : créer directement des fichiers pour contrôler les tailles relatives.
+
+Si les données changent, les figures sont refaites par le script.
+
+## Exemple
+
+```{r}
+plot(cars)
+```
+
+## Méthodes
+
+Demander à R d'écrire dans un fichier plutôt qu'à l'écran
+
+```{r}
+postscript("Fig1.eps", width = 6, height = 4, horizontal=FALSE)
+plot(cars)
+dev.off()
+```
+
+`postscript` crée un fichier EPS, `pdf` un fichier PDF et `svg` un fichier SVG. 
+
+`bmp`, `jpeg`, `png`, `tiff` créent des fichiers raster.
+
+
+## Usage
+
+Fichiers vectoriel pour les figures : PostScript ou PDF pour LaTeX, MetaFile pour Word:
+
+```{r}
+library("devEMF")
+emf("Fig1.emf", width = 6, height = 4)
+plot(cars)
+dev.off()
+```
+
+Fichiers raster pour les rasters ou demandes particulières.
+
+
+## ragg
+
+[**ragg**](https://ragg.r-lib.org/) améliore le rendu des figures en PNG, JPEG et TIFF.
+
+Fonctions : `agg_png()`, `agg_jpeg()` et `agg_tiff()`.
+
+Utilisable par RStudio >=1.4 et par **knitr**.
+
+
+## Points de vigilance
+
+Taille des caractères.
+
+Couleurs ou non.
+
+Ne passer en raster qu'en tout dernier recours. 300 dpi minimum.
+
+Utiliser la documentation des fonctions pour les finitions (polices, taille, transparence...).
+
+
+## Exemple de PLOS
+
+[Instructions](http://journals.plos.org/plosone/s/figures)
+
+Les seuls formats acceptés sont PostScript et TIFF.
+
+Les tailles sont précisées.
+
+R n'encapsule pas les polices dans les fichiers EPS :
+
+- utiliser `embedFonts()` pour le faire (nécessite _Ghostscript_)
+
+- ou utiliser _Inkscape_ pour transformer les polices en courbes avant publication.
+
+
+
+
+<!-- Styles for HTML slides -->
+<style>
+  /* Allow long bibliography */
+  .forceBreak { -webkit-column-break-after: always; break-after: column; }
+  slides > slide { overflow: scroll; }
+  slides > slide:not(.nobackground):after { content: ''; }
+
+  /* First page logo size */
+  .gdbar img {
+    width: 200px !important;
+    height: 55px !important;
+    margin: 8px 8px;
+  }
+  .gdbar {
+    width: 250px !important;
+    height: 70px !important;
+  }
+  
+  /* No logo on slides */
+  slides > slide:not(.nobackground):before {
+    display:none
+  }
+</style>

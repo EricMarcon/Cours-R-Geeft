@@ -1,0 +1,385 @@
+---
+title: "Contrôle de Source"
+author: "Eric Marcon"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+url: https://EricMarcon.github.io/Cours-R-Geeft/
+github-repo: EricMarcon/Cours-R-Geeft
+bibliography: references.bib
+biblio-style: chicago
+urlcolor: blue
+output:
+  bookdown::beamer_presentation2:
+    latex_engine: xelatex
+    includes:
+      in_header: latex/header.tex
+    citation_package: natbib
+    slide_level: 2
+    df_print: default
+    number_sections: no
+    toc: no
+    fig_caption: no
+    keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
+---
+
+```{r}
+#| label: DoNotModify
+#| include: false
+### Utilities. Do not modify.
+# Installation of packages if necessary
+InstallPackages <- function(Packages) {
+  InstallPackage <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {
+      install.packages(Package, repos = "https://cran.rstudio.com/")
+    }
+  }
+  invisible(sapply(Packages, InstallPackage))
+}
+
+# Basic packages
+InstallPackages(c("bookdown", "formatR", "kableExtra", "ragg"))
+
+# kableExtra must be loaded 
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "docx") {
+  # Word output (https://stackoverflow.com/questions/35144130/in-knitr-how-can-i-test-for-if-the-output-will-be-pdf-or-word)
+  # Do not use autoformat (https://github.com/haozhu233/kableExtra/issues/308)
+  options(kableExtra.auto_format = FALSE)
+}
+library("kableExtra")
+
+# Chunk font size hook: allows size='small' or any valid Latex font size in chunk options
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r}
+#| label: Options
+#| include: false
+### Customized options for this document
+# Add necessary packages here
+Packages <- c("tidyverse")
+# Install them
+InstallPackages(Packages)
+
+# knitr options
+knitr::opts_chunk$set(
+  cache =   TRUE,     # Cache chunk results
+  include = TRUE,     # Show/Hide chunks
+  echo =    TRUE,     # Show/Hide code
+  warning = FALSE,    # Show/Hide warnings
+  message = FALSE,    # Show/Hide messages
+  # Figure alignment and size
+  fig.align = 'center', out.width = '80%',
+  # Graphic devices (ragg_png is better than standard png)
+  dev = c("ragg_png", "pdf"),
+  # Code chunk format
+  tidy = FALSE, tidy.opts = list(blank = FALSE, width.cutoff = 50),
+  size = "scriptsize", knitr.graphics.auto_pdf = TRUE
+)
+options(width = 50)
+
+# ggplot style
+library("tidyverse")
+theme_set(theme_bw())
+theme_update(
+  panel.background = element_rect(fill = "transparent", colour = NA),
+  plot.background = element_rect(fill = "transparent", colour = NA)
+)
+knitr::opts_chunk$set(dev.args = list(bg = "transparent"))
+
+# Tibbles: 5 lines, fit to slide width
+options(tibble.print_min = 5, tibble.width = 50)
+
+# Random seed
+set.seed(973)
+```
+
+
+# Principes
+
+## git
+
+git est un gestionaire de sources :
+
+- Suivi des modifications : bien plus qu'une sauvegarde !
+
+- Possibilité de revenir en arrière ;
+
+- Plusieurs versions concurrentes : branches.
+
+
+## GitHub
+
+GitHub est une plateforme pour la collaboration basée sur Git.
+
+- Possibilité de développer à plusieurs : la fin des pièces jointes !
+
+- Présentation des résultats : pages GitHub ;
+
+- Intégration continue: GitHub Actions.
+
+
+# git
+
+## Installation
+
+RStudio doit détecter Git
+
+```{r}
+#| echo: false
+#| out.width: 60%
+knitr::include_graphics("images/r_options.png")
+```
+
+Sinon, [l'installer](https://ericmarcon.github.io/travailleR/chap-logiciels.html#git-et-github).
+
+
+## Opérations élémentaires : filtrage
+
+Les fichiers modifiés sont dans la fenêtre Git de RStudio.
+
+Utiliser .gitignore pour masquer les fichiers non suivis.
+
+
+## Opérations élémentaires : commit
+
+- Créer un fichier R avec une ligne de code et l'enregistrer.
+
+Après chaque séance de travail, livrer le résultat (_Commit_)
+
+Sélectionner les fichiers à livrer.
+
+Saisir un message clair : résumé sur la première ligne.
+
+
+## Suivi du projet
+
+Icône en forme d'horloge dans la fenêtre Git
+
+```{r, echo=FALSE, out.width='80%'}
+knitr::include_graphics("images/git_history.png")
+```
+
+# GitHub
+
+## GitHub
+
+Ouvrir un compte sur GitHub
+
+```{r}
+#| echo: false
+#| out.width: 60%
+knitr::include_graphics("images/GitHub_accueil.png")
+```
+
+
+## Sécurité GitHub
+
+Créer un jeton d'accès personnel :
+
+- Paramètres du compte utilisateur ;
+- Developer Settings > Personal Access Tokens > Tokens (classic) ;
+- Générer un jeton, le décrire en tant que "git-RStudio" et lui donner l'autorisation "repo".
+
+Sauvegarder le jeton ! Il sera demandé à la première tentative de pousser des modifications sur GitHub.
+
+
+## Nom de la branche principale
+
+La branche principale s'appelle historiquement `master` mais [récemment](https://github.com/github/renaming) `main` par défaut.
+
+Choisir :
+
+- Paramètres du compte utilisateur ;
+- Repositories : Repository default branch ;
+
+La branche s'appelle "master" dans toute cette présentation.
+
+Dans le terminal de RStudio:
+
+```
+git config --global init.defaultBranch master
+```
+
+
+## Créer un projet
+
+A partir de rien :
+
+- Dans GitHub : 
+    - _New Repository_
+    - Choisir le nom (pas de caractères spéciaux)
+    - Ne rien ajouter : le projet doit être vide.
+- Copier l'URL à partir de _Clone or Download_
+
+- Dans RStudio : nouveau projet à partir de Git, coller l'URL.
+
+
+## Créer un projet
+
+A partir d'un projet RStudio existant :
+
+- Passer le projet sous contrôle de version : 
+    - _Tools /Version Control /Project Setup..._
+    - Sélectionner _Git_.
+- Créer un dépôt sur GitHub, récupérer son URL : https://github.com/MonCompte/MonDepot.git
+- Dans le Terminal de RStudio, exécuter :
+
+```
+git remote add origin https://github.com/MonCompte/MonDepot.git
+git branch -M master
+git push -u origin master
+```
+
+# Pratique
+
+## Opérations élémentaires : synchroniser
+
+A chaque nouvelle séance de travail :
+
+- Tirer (_Pull_) pour récupérer les modifications sur GitHub.
+
+Pendant la séance de travail, après chaque tâche élementaire :
+
+- Livrer (_Commit_) les modifications.
+
+A la fin de chaque nouvelle séance de travail :
+
+- Pousser (_Push_) ses modifications vers GitHub pour les rendre publiques.
+
+
+## Opérations élémentaires : collaborer
+
+Déclarer un collaborateur.
+
+Travailler à deux ou plus sur le même fichier.
+
+Contenu d'une séance de travail :
+
+- Tirer ;
+- Modifier ;
+- Livrer ;
+- Pousser.
+
+
+## Conflits
+
+L'information élémentaire est la ligne.
+
+Modifications contradictoires =  conflit.
+
+Minimiser les conflits : dans un texte, une phrase = une ligne.
+
+En cas de conflit, trancher.
+
+
+## TP : Modifier le projet
+
+Ajouter un fichier README.md
+
+Prendre en compte, valider et pousser.
+
+
+## Générer un conflit
+
+Editer la même ligne de README.md :
+
+- en ligne sur GitHub ;
+- localement.
+
+Tirer, constater le conflit, le résoudre.
+
+## Collaborer avec son voisin
+
+Le voisin de gauche invite celui de droite sur GitHub.
+
+Les deux modifient le projet.
+
+- Bien penser à tirer avant de modifier.
+- Pousser rapidement pour limiter les conflits.
+
+
+# Branches
+
+## Intérêt
+
+Modifier le projet sans perturber son état stable.
+
+Application : 
+
+- développer une nouvelle fonctionnalité ;
+
+- la tester, corriger les bugs ;
+
+- la rendre visible quand elle est terminée.
+
+
+## Créer une branche
+
+Cliquer sur New Branch
+
+Travailler dans la nouvelle branche (pull, commit, push).
+
+
+## Fusionner
+
+Se placer dans la branche master.
+
+Exécuter:
+```
+git merge branche_a_fusionner
+```
+
+
+# Fork et Pull Request
+
+## Fork
+
+Objectif : modifier le dépôt d'un autre
+
+[Fourcher](https://help.github.com/articles/fork-a-repo/): création d'une copie du dépôt
+
+Commencer une nouvelle branche, la modifier.
+
+
+## Pull Request
+
+Demande d'intégration de la branche: _Pull Request_.
+
+Sur GitHub.
+
+Dialogue possible.
+
+Si acceptation, fusion de la branche et suppression.
+
+
+
+
+<!-- Styles for HTML slides -->
+<style>
+  /* Allow long bibliography */
+  .forceBreak { -webkit-column-break-after: always; break-after: column; }
+  slides > slide { overflow: scroll; }
+  slides > slide:not(.nobackground):after { content: ''; }
+
+  /* First page logo size */
+  .gdbar img {
+    width: 200px !important;
+    height: 55px !important;
+    margin: 8px 8px;
+  }
+  .gdbar {
+    width: 250px !important;
+    height: 70px !important;
+  }
+  
+  /* No logo on slides */
+  slides > slide:not(.nobackground):before {
+    display:none
+  }
+</style>
