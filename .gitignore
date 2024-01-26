@@ -33,6 +33,7 @@
 # Template specific
 packages.bib
 temp.*
+Fig1.*
 
 # Uncomment if CI builds docs/
 docs/
