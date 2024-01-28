@@ -1,0 +1,380 @@
+---
+title: "Mise à niveau R 3/3"
+author: "Eric Marcon"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+url: https://EricMarcon.github.io/Cours-R-Geeft/
+github-repo: EricMarcon/Cours-R-Geeft
+bibliography: references.bib
+biblio-style: chicago
+urlcolor: blue
+output:
+  bookdown::beamer_presentation2:
+    latex_engine: xelatex
+    includes:
+      in_header: latex/header.tex
+    citation_package: natbib
+    slide_level: 2
+    df_print: default
+    number_sections: no
+    toc: no
+    fig_caption: no
+    keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
+---
+
+```{r}
+#| label: DoNotModify
+#| include: false
+### Utilities. Do not modify.
+# Installation of packages if necessary
+InstallPackages <- function(Packages) {
+  InstallPackage <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {
+      install.packages(Package, repos = "https://cran.rstudio.com/")
+    }
+  }
+  invisible(sapply(Packages, InstallPackage))
+}
+
+# Basic packages
+InstallPackages(c("bookdown", "formatR", "kableExtra", "ragg"))
+
+# kableExtra must be loaded 
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "docx") {
+  # Word output (https://stackoverflow.com/questions/35144130/in-knitr-how-can-i-test-for-if-the-output-will-be-pdf-or-word)
+  # Do not use autoformat (https://github.com/haozhu233/kableExtra/issues/308)
+  options(kableExtra.auto_format = FALSE)
+}
+library("kableExtra")
+
+# Chunk font size hook: allows size='small' or any valid Latex font size in chunk options
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r}
+#| label: Options
+#| include: false
+### Customized options for this document
+# Add necessary packages here
+Packages <- c(
+  "tidyverse", 
+  "entropart",
+  "microbenchmark"
+)
+# Install them
+InstallPackages(Packages)
+
+# knitr options
+knitr::opts_chunk$set(
+  cache =   TRUE,     # Cache chunk results
+  include = TRUE,     # Show/Hide chunks
+  echo =    TRUE,     # Show/Hide code
+  warning = FALSE,    # Show/Hide warnings
+  message = FALSE,    # Show/Hide messages
+  # Figure alignment and size
+  fig.align = 'center', out.width = '80%',
+  # Graphic devices (ragg_png is better than standard png)
+  dev = c("ragg_png", "pdf"),
+  # Code chunk format
+  tidy = FALSE, tidy.opts = list(blank = FALSE, width.cutoff = 50),
+  size = "scriptsize", knitr.graphics.auto_pdf = TRUE
+)
+options(width = 50)
+
+# ggplot style
+library("tidyverse")
+theme_set(theme_bw())
+theme_update(
+  panel.background = element_rect(fill = "transparent", colour = NA),
+  plot.background = element_rect(fill = "transparent", colour = NA)
+)
+knitr::opts_chunk$set(dev.args = list(bg = "transparent"))
+
+# Tibbles: 5 lines, fit to slide width
+options(tibble.print_min = 5, tibble.width = 50)
+
+# Random seed
+set.seed(973)
+```
+
+
+# Vectoriser
+
+## Fonctions vectorielles
+
+La plupart des fonctions de R sont vectorielles :
+
+```{r}
+x1 <- runif(3)
+x2 <- runif(3)
+sqrt(x1)
+x1 + x2
+```
+
+Raisonner en termes de vecteurs plutôt que de scalaires.
+
+
+## Fonctions vectorielles
+
+Ecrire des fonctions vectorielles sur leur premier argument :
+
+```{r}
+entropart::lnq
+```
+
+
+## Fonctions de résumé
+
+Exceptions à la règle : fonctions d'un vecteur, résultat scalaire.
+
+```{r}
+sum(x1)
+```
+
+
+## Fonctions non vectorielles
+
+`sapply()` applique une fonction à chaque élément d'un vecteur ou d'une liste.
+
+```{r}
+x1 <- runif(1000)
+identical(
+  sqrt(x1), 
+  sapply(x1, FUN = sqrt)
+)
+```
+On utilise donc `sapply()` quand on ne dispose pas d'une fonction vectorielle.
+
+On n'utilise donc jamais `sapply()` avec `FUN = sqrt`.
+
+
+## Fonctions non vectorielles
+
+Fonctions similaires :
+
+```{r}
+#| tidy: true
+library("microbenchmark")
+mb <- microbenchmark(sqrt(x1), sapply(x1, FUN = sqrt), lapply(x1, sqrt), vapply(x1, sqrt, FUN.VALUE = 0))
+summary(mb)[, c("expr", "median")]
+```
+
+Infiniment plus lent qu'une fonction vectorielle.
+
+- `lapply()` renvoie une liste (économise le temps de `simplify2array()`) - `vapply()` économise le temps de détermination du type du vecteur.
+
+
+## Boucles
+
+Les boucles sont plus rapides !
+
+```{r}
+boucle <- function(x) {
+  racine <- numeric(length(x))
+  for(i in 1:length(x)) racine[i] <- sqrt(x[i])
+  return(racine)
+}
+vapply_sqrt <- function(x) vapply(x, FUN = sqrt, 0)
+mb <- microbenchmark(vapply_sqrt(x1), boucle(x1))
+summary(mb)[, c("expr", "median")]
+```
+
+
+## Boucles
+
+Les boucles longues permettent un suivi :
+
+```{r}
+boucle <- function(x) {
+  pgb <- txtProgressBar(min = 0, max = length(x))
+  racine <- numeric(length(x))
+  for(i in 1:length(x)) {
+    racine[i] <- sqrt(x[i])
+    setTxtProgressBar(pgb, i)
+  }
+  return(racine)
+}
+racine_x1 <- boucle(x1)
+```
+Mais le package [*pbapply*](https://peter.solymos.org/pbapply/) aussi.
+
+
+## replicate et vectorize
+
+`replicate()` répète une instruction.
+
+```{r}
+replicate(3, runif(1))
+```
+
+est équivalent à `runif(3)`.
+A utiliser avec des fonctions non vectorielles.
+
+`vectorize()` rend vectorielle une fonction qui ne l'est pas par des boucles. 
+Ecrire plutôt les boucles.
+
+
+
+# Pratique 
+
+## Vectoriser un problème
+
+Données : inventaire d'une parcelle de Paracou, 4 carrés distincts.
+
+Objectif : calculer le nombre d'arbres par espèce, le nombre d'arbres par carré, la biodiversité par carré.
+
+Technique : utiliser les fonctions vectorielles, les fonctions de type `apply`, éventuellement des boucles.
+
+
+## Lecture et organisation des données
+
+Lecture des arbres de la parcelle 6 de Paracou
+```{r}
+# Lecture des arbres de la parcelle 6 de Paracou
+paracou6 <- read.csv2("data/Paracou6.csv")
+```
+
+Création d'un tableau croisé :
+```{r}
+paracou6_x <- as.data.frame.matrix(xtabs(
+  ~paste(Family, Genus, Species) + SubPlot, data = paracou6
+))
+paracou6_x[1:2, ]
+```
+
+`as.data.frame.matrix` est la méthode de conversion des matrices en dataframes...
+
+
+## Tableau croisé dans le tidyverse
+
+```{r}
+library("tidyverse")
+read.csv2("data/Paracou6.csv") |> 
+  # Nouvelle colonne
+  unite(col = spName, Family, Genus, Species, sep = " ") |> 
+  # Regrouper et résumer
+  group_by(spName, SubPlot) |> 
+  summarise(abundance = n()) |> 
+  # Voir l'aide de la fonction pivot_wider
+  pivot_wider(names_from = SubPlot, values_from = abundance, 
+              names_sort = TRUE, values_fill = 0) ->
+  paracou6_pw
+```
+
+Syntaxe plus verbeuse mais n'importe quelle statistique est possible, pas seulement le comptage.
+
+
+## Statistiques marginales
+
+`apply()` applique une fonction aux lignes ou colonnes d'un objet 2D.
+
+`colSums()` et semblables (`colMeans()`, `rowMeans()`) sont optimisées.
+
+```{r}
+paracou6_x <- as.matrix(paracou6_pw[, -1])
+mb <- microbenchmark(
+  apply(paracou6_x, MARGIN = 2, FUN = sum), 
+  colSums(paracou6_x)
+)
+summary(mb)[, c("expr", "median")]
+colSums(paracou6_x)
+```
+
+
+## Comptage du nombre d'espèces
+
+```{r}
+mb <- microbenchmark(
+  apply(paracou6_x, 2, function(x) sum(x > 0)), 
+  colSums(paracou6_x > 0)
+)
+summary(mb)[, c("expr", "median")]
+colSums(paracou6_x > 0)
+```
+
+Remarquer :
+
+- le comptage d'un résultat de test (`TRUE` vaut 1, `FALSE` vaut 0)
+- la définition d'une fonction sans nom, appelée "fonction lambda".
+
+
+## Fonctions complexes
+
+Estimation de la richesse spécifique avec *entropart*
+
+```{r}
+library("entropart")
+apply(paracou6_x, MARGIN = 2, FUN = Richness)
+```
+
+## Exercice
+
+Estimer par simulation l'espérance et la variance d'une loi binomiale.
+
+1. Effectuer 10 tirages dans une loi uniforme ;
+2. Compter le nombre de succès = résultats inférieurs à la probabilité `p` choisie ;
+3. Effectuer 5 fois 10 tirages ;
+4. Calculer la moyenne et l'espérance des 5 nombres de succès.
+5. Passer à l'échelle : 10000 tirages, 1000 répétitions.
+
+## Aide pour l'exercice
+
+1. `runif()`, paramètre `tirages_n`
+2. Somme des valeurs vraies
+3. `replicate` fournit une matrice ; paramètre `repetitions_n`.
+4. `colSums`
+5. Changer les paramètres.
+
+## Solution de l'exercice
+
+```{r}
+p <- 0.5
+tirages_n <- 10000
+repetitions_n <- 1000
+succes_n <- colSums(replicate(repetitions_n, runif(tirages_n)) < p)
+mean(succes_n)
+sd(succes_n)
+```
+
+# Conclusion
+
+## Vecteurs ou tidy
+
+Deux approches différentes : 
+
+- R classique : sélection par `[ ]`, fonctions *x*`apply()` ;
+- Tidyverse : pipelines, données rectangulaires.
+
+Le tidyverse est très efficace pour la bagarre avec les données, les *x*`apply()` pour appliquer les mêmes fonctions à plusieurs vecteurs de données.
+
+
+
+<!-- Styles for HTML slides -->
+<style>
+  /* Allow long bibliography */
+  .forceBreak { -webkit-column-break-after: always; break-after: column; }
+  slides > slide { overflow: scroll; }
+  slides > slide:not(.nobackground):after { content: ''; }
+
+  /* First page logo size */
+  .gdbar img {
+    width: 200px !important;
+    height: 55px !important;
+    margin: 8px 8px;
+  }
+  .gdbar {
+    width: 250px !important;
+    height: 70px !important;
+  }
+  
+  /* No logo on slides */
+  slides > slide:not(.nobackground):before {
+    display:none
+  }
+</style>
