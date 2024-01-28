@@ -140,7 +140,7 @@ hist(hdv2003$age)
 plot(density(hdv2003$age))
 ```
 
-## Densité avec réflexion
+## Densité sans réflexion
 
 La densité n'est pas bornée
 
