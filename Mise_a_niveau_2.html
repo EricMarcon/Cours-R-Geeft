@@ -9,7 +9,7 @@
 
 
 
-  <meta name="date" content="2024-01-26" />
+  <meta name="date" content="2024-01-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3207,7 +3207,7 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">26 January 2024</p>
+            <p style="margin-top: 6px; margin-left: -2px;">30 January 2024</p>
           </hgroup>
   </slide>
 
@@ -3651,6 +3651,55 @@ puissance(1:3, r = 2)</pre>
 <pre class = 'prettyprint lang-r'>puissance(1:3, r = 3:1)</pre>
 
 <pre >## [1] 1 4 3</pre>
+
+<p></p>
+
+</article></slide><slide class=""><hgroup><h2>Fonctions opérateurs (<em>infix functions</em>)</h2></hgroup><article  id="fonctions-opérateurs-infix-functions">
+
+<p>Les opérateurs de R sont en fait des fonctions:</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>identical(2 + 2, `+`(2, 2))</pre>
+
+<pre >## [1] TRUE</pre>
+
+<p></p>
+
+<p>Les opérateurs définis par l’utilisateur sont obligatoirement entre % :</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>`%+%` &lt;- function(a, b) paste(a, b)
+&quot;Nouvelle&quot; %+% &quot;chaîne&quot;</pre>
+
+<pre >## [1] &quot;Nouvelle chaîne&quot;</pre>
+
+<p></p>
+
+<p><a href='http://adv-r.had.co.nz/Functions.html#special-calls' title=''>Référence</a></p>
+
+</article></slide><slide class=""><hgroup><h2>Argument …</h2></hgroup><article  id="argument">
+
+<p>Les <code>...</code> sont des arguments libres à passer à une autre fonction :</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>f &lt;- function(x) x
+g &lt;- function(y, ...) f(...)
+g(&quot;Rien&quot;, x = &quot;Argument x passé à f par g&quot;)</pre>
+
+<pre >## [1] &quot;Argument x passé à f par g&quot;</pre>
+
+<p></p>
+
+<p>Mais il faut que tout argument soit reconnu par une fonction :</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>tryCatch(g(&quot;Rien&quot;, z = 2), error= function(e) print(e))</pre>
+
+<pre >## &lt;simpleError in f(...): unused argument (z = 2)&gt;</pre>
 
 <p></p>
 
