@@ -164,6 +164,7 @@ plot(
 Histogramme des probabilités 
 
 ```{r}
+#| out-width: 50%
 hist(
   hdv2003$freres.soeurs, 
   prob = TRUE,
@@ -381,7 +382,7 @@ qt(1 - alpha / 2, df = 1E6)
   <p class="forceBreak"></p>
 
 ```{r}
-#| out-width: 50%
+#| out-width: 70%
 n = 30
 plot(density(
   replicate(
@@ -391,8 +392,8 @@ plot(density(
 ))
 ci <- qt(1-alpha/2, df = n - 1) / 
   sqrt(12) / sqrt(n)
-abline(v = 0.5 - ci, col = "red")
-abline(v = 0.5 + ci, col = "red")
+abline(v = 0.5 + c(ci, -ci), 
+       col = "red", lty = 2)
 ```
 
   \endcol
@@ -419,6 +420,34 @@ paste("Intervalle de confiance:", tv_mean - ci, "-", tv_mean + ci)
 On regarde la TV plus de 2 heures par jour (95% de confiance).
 
 
+## Méthode de Monte-Carlo
+
+Si la loi est inconnue mais l'algorithme de simulation disponible.
+
+Exemple : carré d'une distribution normale.
+
+```{r}
+#| out-width: 50%
+dist <- rnorm(tirages_n)^2
+(dist_q <- quantile(dist, c(0.025, 0.975)))
+plot(density(dist), main = "")
+abline(v = dist_q, col = "red", lty = 2)
+```
+
+## Méthode de Monte-Carlo
+
+... mais on connaît souvent les distributions.
+
+Le carré d'une loi normale est une loi du $\chi^2$ à 1 degré de liberté, identique à une loi $\Gamma$ de forme $1/2$ et d'échelle $2$.
+
+```{r}
+qchisq(.075, df = 1)
+qchisq(.975, df = 1)
+qgamma(0.975, shape = 1/2, scale = 2)
+```
+
+
+$\to$ lire l'aide `?qchisq`, Wikipedia, Google...
 
 
 <!-- Styles for HTML slides -->
