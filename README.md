@@ -32,7 +32,7 @@ Données, fonctions, structures de contrôle, graphiques de base :
 
 ## TP 2
 
-Statistiques univariées et lois de probabilité.
+Statistiques univariées et lois de probabilité :
 
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/TP_2.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/TP_2.pdf)
 - [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : [Modèles statistiques et intervalles de confiance](https://pmarchand1.github.io/ECL7102/notes_cours/3-Modeles_statistiques.html)
@@ -81,14 +81,20 @@ Vectorisation, boucles, fonctions *x*apply() :
 - [Travailler avec R](https://ericmarcon.github.io/travailleR/chap-utiliseR.html#boucles) : Boucles.
 
 
+
 ## TP 5
 
-Le modèle linéaire :
+Statistiques bivariées :
 
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/TP_5.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/TP_5.pdf)
+
+
+## Le modèle linéaire
+
+Supports :
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Modele_lineaire.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Modele_lineaire.pdf)
 - [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : [Régression linéaire simple](https://pmarchand1.github.io/ECL7102/notes_cours/6-Regression_lineaire.html)
-
-
 
 
 ## Contrôle de source
