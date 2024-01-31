@@ -1,0 +1,686 @@
+---
+title: "Le modèle linéaire"
+author: "Eric Marcon"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+url: https://EricMarcon.github.io/Cours-R-Geeft/
+github-repo: EricMarcon/Cours-R-Geeft
+bibliography: references.bib
+biblio-style: chicago
+urlcolor: blue
+output:
+  bookdown::beamer_presentation2:
+    latex_engine: xelatex
+    includes:
+      in_header: latex/header.tex
+    citation_package: natbib
+    slide_level: 2
+    df_print: default
+    number_sections: no
+    toc: no
+    fig_caption: no
+    keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
+---
+
+```{r}
+#| label: DoNotModify
+#| include: false
+### Utilities. Do not modify.
+# Installation of packages if necessary
+InstallPackages <- function(Packages) {
+  InstallPackage <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {
+      install.packages(Package, repos = "https://cran.rstudio.com/")
+    }
+  }
+  invisible(sapply(Packages, InstallPackage))
+}
+
+# Basic packages
+InstallPackages(c("bookdown", "formatR", "kableExtra", "ragg"))
+
+# kableExtra must be loaded 
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "docx") {
+  # Word output (https://stackoverflow.com/questions/35144130/in-knitr-how-can-i-test-for-if-the-output-will-be-pdf-or-word)
+  # Do not use autoformat (https://github.com/haozhu233/kableExtra/issues/308)
+  options(kableExtra.auto_format = FALSE)
+}
+library("kableExtra")
+
+# Chunk font size hook: allows size='small' or any valid Latex font size in chunk options
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r}
+#| label: Options
+#| include: false
+### Customized options for this document
+# Add necessary packages here
+Packages <- c(
+  "tidyverse"
+)
+# Install them
+InstallPackages(Packages)
+
+# knitr options
+knitr::opts_chunk$set(
+  cache =   TRUE,     # Cache chunk results
+  include = TRUE,     # Show/Hide chunks
+  echo =    TRUE,     # Show/Hide code
+  warning = FALSE,    # Show/Hide warnings
+  message = FALSE,    # Show/Hide messages
+  # Figure alignment and size
+  fig.align = 'center', out.width = '80%',
+  # Graphic devices (ragg_png is better than standard png)
+  dev = c("ragg_png", "pdf"),
+  # Code chunk format
+  tidy = FALSE, tidy.opts = list(blank = FALSE, width.cutoff = 50),
+  size = "scriptsize", knitr.graphics.auto_pdf = TRUE
+)
+options(width = 50)
+
+# ggplot style
+library("tidyverse")
+theme_set(theme_bw())
+theme_update(
+  panel.background = element_rect(fill = "transparent", colour = NA),
+  plot.background = element_rect(fill = "transparent", colour = NA)
+)
+knitr::opts_chunk$set(dev.args = list(bg = "transparent"))
+
+# Tibbles: 5 lines, fit to slide width
+options(tibble.print_min = 5, tibble.width = 50)
+
+# Random seed
+set.seed(973)
+```
+
+
+# Régression linéaire simple
+
+## Ventoux
+
+Données du projet de dendrométrie 2020, Mont Ventoux.
+
+```{r}
+read_csv2("data/Inv_GEEFT_Ventoux_09-2020.csv") |> 
+  rename(
+    espece = Espèce, 
+    diametre = `Diamètre (cm)`, 
+    hauteur = `Hauteur réelle (m)`
+  ) |> 
+  mutate(
+    espece = case_match(
+      espece, 
+      "P" ~ "Pin",
+      "C" ~ "Cèdre"
+    )
+  ) -> ventoux
+```
+
+
+## Graphique hauteur ~ diamètre
+
+```{r}
+#| out.width: 70%
+ventoux |> 
+  ggplot(aes(x = diametre, y = hauteur)) +
+  geom_point(aes(col = espece)) +
+  geom_smooth(method = "lm")
+```
+
+
+## Théorie
+
+Modèle linéaire simple :
+$$Y = \beta_0 + \beta_1 X + \Epsilon$$
+$Y$ et $X$ sont des vecteurs : $Y = \{y_i\}$ est l'ensemble des observations. Par abus d'écriture, $Y$ est aussi la variable aléatoire dont les $y_i$ sont des réalisations.
+
+Vocabulaire : variable expliquée, exogène, coefficients, constante (intercept)...
+
+$\Epsilon = \{\epsilon_i\}$ est l'erreur du modèle. $\Epsilon \sim \mathcal{N}(0,\sigma^{2})$
+ 
+
+## Représentation 
+
+Le modèle prédit une densité de probabilité des valeurs de $Y$ pour toute valeur de $X$ distribuée normalement autour de la droite de régression.
+
+```{r}
+#| echo: false
+#| label: mod_l1_params
+beta_0 <- 1
+beta_1 <- 0.5
+sigma <- 1
+```
+
+
+```{r}
+#| echo: false
+n_fig <- 20
+# Jeu de points
+mod_l1fig <- tibble(
+  x = rnorm(n_fig, mean = 10, sd = 2), # x est calculé avant y 
+  y = rnorm(n_fig, mean = beta_0 + beta_1 * x, sd = sigma) # y utilise x
+)
+# Points y*
+x0 <- 7:13
+mod_l1fig_predict <- tibble(x = x0, y = beta_0 + beta_1 * x0)
+# Distribution autour de y*. Le nombre de points doit être multiple de lengh(x0)
+norm_dta <- tibble(
+  y = rnorm(7000, mean = beta_0 + beta_1 * x0, sd = sigma), 
+  x = x0 + dnorm(x = y- beta_0 - beta_1 * x0, mean = 0,  sd = 0.7)
+)
+# Figure
+ggplot() + 
+  # Jeu de points
+  geom_point(data = mod_l1fig, aes(x = x, y = y)) +
+  # Ajustement du modèle
+  geom_abline(slope = beta_1, intercept = beta_0) + 
+  # Points y*
+  geom_point(data = mod_l1fig_predict, aes(x = x, y = y), col = 'red') +
+  # Distribution autour de y*
+  geom_point(data = norm_dta, aes(x = x, y = y), col = 'red', alpha=0.02) +
+  xlim(c(5, 15)) + ylim(c(2, 10))
+```
+
+
+## Hypothèses
+
+- Indépendance des erreurs : $\mathrm{Cov}(\epsilon_i, \epsilon_j) = 0$.
+Assurée par le design expérimental.
+
+- Exogénéité : $X$n'est pas corrélé à $\Epsilon$.
+
+- Homoscédasticité : la variance de l'erreur est constante sur l'étendue de $X$.
+
+- Normalité des termes d'erreur : $\Epsilon \sim \mathcal{N}(0,\sigma^{2})$.
+
+
+## Exemple
+
+Générer les données du modèle.
+
+Coefficients : 
+```{r}
+beta_0 <- 1
+beta_1 <- 0.5
+sigma <- 1
+```
+
+Tirage :
+```{r}
+n <- 100
+x <- runif(n, min = 5, max = 15)
+# Jeu de points
+mod_l1 <- tibble(x, y = rnorm(n, mean = beta_0 + beta_1*x, sd = sigma))
+```
+
+
+## Estimation
+
+Commencer par une figure.
+
+```{r}
+mod_l1 |> 
+  ggplot(aes(x = x, y = y)) + geom_point() + geom_smooth(method = lm)
+```
+
+
+## Estimation
+
+La fonction `lm()` du package *stats* estime le modèle et permet de tester les hypothèses.
+
+```{r}
+mod_l1_lm <- lm(y ~ x, data = mod_l1)
+```
+
+Syntaxe de la formule :
+
+- variable expliquée à gauche, covariables à droite de `~`
+- constante implicite `y ~ x` est identique à `y ~ 1 + x` alors que `y ~ 0 + x` force la constante à 0.
+- possibilité de transformer les variables : `log(y) ~ I(x^2)` (Attention : `log(y) ~ x^2` est interprété comme l'interaction de `x` avec lui-même, c'est-à-dire `x`)
+
+
+## Homoscédasticité et indépendance des erreurs
+
+Graphique $\Epsilon \sim Y*$
+
+```{r}
+#| out.width: 60%
+plot(mod_l1_lm, which = 1)
+```
+
+Les erreurs doivent être centrée sur 0 et uniformément réparties.
+
+
+## Normalité des erreurs
+
+Graphique quantile - quantile (`?qqplot`)
+
+```{r}
+#| out.width: 60%
+plot(mod_l1_lm, which = 2)
+```
+
+La non-normalité des résidus implique la non-normalité des estimateurs des coefficients. 
+
+
+## Effet de levier
+
+```{r}
+#| out.width: 60%
+plot(mod_l1_lm, which = 5)
+```
+Les points avec fort effet de levier forte erreur ($\to$ grande distance de Cook) posent problème.
+
+
+## Rectification des données
+
+Affaire d'expérience.
+
+- Éliminer les points (réellement) aberrants ;
+- Transformer $Y$ si :
+  - la relation n'est pas linéaire (ex.: quadratique) ;
+  - l'erreur augmente avec $Y*$ ($\to$ racine carrée ou logarithme).
+- Revoir les hypothèses à l'origine du modèle, le design expérimental...
+
+
+## Interprétation des résultats : `summary`
+
+```{r}
+#| echo: false
+summary(mod_l1_lm)
+```
+
+## Statistique F
+
+La statistique F décrit la probabilité que le modèle n'explique rien.
+
+Modèle nul: $Y = \bar{Y} = \beta_0$
+
+```{r}
+#| echo: false
+# Jeu de points
+mod_l1null <- tibble(
+  x = mod_l1fig$x,
+  y = rnorm(n_fig, mean = beta_0, sd = sigma)
+)
+# Points y*
+x0 <- 7:13
+mod_l1null_predict <- tibble(x = x0, y = beta_0)
+# Distribution autour de y*. Le nombre de points doit être multiple de lengh(x0)
+norm_dta <- tibble(
+  y = rnorm(7000, mean = beta_0, sd = sigma), 
+  x = x0 + dnorm(x = y- beta_0, mean = 0,  sd = 0.7)
+)
+# Figure
+ggplot() + 
+  # Jeu de points
+  geom_point(data = mod_l1null, aes(x = x, y = y)) +
+  # Ajustement du modèle
+  geom_hline(yintercept = beta_0) + 
+  # Points y*
+  geom_point(data = mod_l1null_predict, aes(x = x, y = y), col = 'red') +
+  # Distribution autour de y*
+  geom_point(data = norm_dta, aes(x = x, y = y), col = 'red', alpha=0.02) +
+  xlim(c(5, 15)) + ylim(c(-2, 3))
+```
+
+
+## R²
+
+R² mesure la proportion de la variance de Y expliquée par le modèle : 
+$$R^2 = \frac{\mathrm{Var}(Y^\star)}{\mathrm{Var}(Y)} = 1 - \frac{\sigma}{\mathrm{Var}(Y)}$$
+
+
+$\to$ Que devient R² en doublant $\sigma$ ?
+Estimer rapidement puis re-simuler le modèle pour vérifier.
+
+R² ajusté pénalise le R² par le nombre de paramètres du modèle. 
+
+Les degrés de liberté sont le nombre d'observations moins le nombre de paramètres moins 1.
+
+
+## Estimation des coefficients
+
+Les coefficients sont estimés par la méthode des moindres carrés : minimisation des écarts $$\sum(y_i - y_i^\star)^2$$.
+
+Résultat identique à la maximisation de la vraisemblance $$\prod{f(\epsilon_i)}$$ où $f(\dot)$ est la densité de $\mathcal{N}(0,\sigma^{2})$.
+
+
+## Estimation des coefficients
+
+L'estimateur de chaque coefficient est sa valeur la plus probable.
+
+L'estimateur est distribué normalement (quand $\Epsilon$ est normal) :
+
+$$\hat{\beta}_1 \sim \mathcal{N}(`r format(mod_l1_lm$coefficients[2], digits = 3)`, `r format(summary(mod_l1_lm)$coefficients[2, 2], digits = 3)`^{2})$$
+
+Un test de Student donne la probabilité de se tromper en affirmant que l'estimateur n'est pas nul.
+
+
+## Synthèse 1/2
+
+Un bon modèle a un grand R² et des petites p-values.
+
+- R² diminue avec la variance de l'erreur ;
+- L'écart-type des estimateur diminue comme $\sqrt{n}$.
+
+Mais les deux dépendent du design expérimental.
+
+
+## Design expérimental
+
+Quadrupler l'effort d'échantillonnage divise par deux l'intervalle de confiance
+
+```{r}
+mod_l1x4 <- tibble(
+  x = rnorm(n * 4, mean = 10, sd = 2), # x est calculé avant y 
+  y = rnorm(n * 4, mean = beta_0 + beta_1 * x, sd =sigma) # y utilise x
+)
+mod_l1x4_lm <- lm(y ~ x, data = mod_l1x4)
+summary(mod_l1x4_lm)$coefficients
+```
+
+Choix économique.
+
+
+## Design expérimental
+
+Retirer les valeurs intermédiaires de $X$ augmente le R² (*design factoriel*) alors que $\sigma$ ne change pas.
+
+```{r}
+mod_l1x4 |> 
+  filter(x < 6 | x >14) %>% # pas |> pour "data = ."
+  lm(y ~ x, data = .) |> 
+  summary() |> 
+  pluck("r.squared")
+```
+
+contre `r summary(mod_l1x4_lm)$r.squared` avec toutes les données.
+
+
+## Design expérimental
+
+Le R² d'un modèle avec des données individuelles est plus faible qu'avec des données agrégées.
+
+$\to$ Estimer le modèle hauteur ~ diamètre des données Ventoux.
+
+$\to$ Regrouper les données par espèce.
+
+$\to$ Estimer le modèle à nouveau.
+
+
+## Synthèse 2/2
+
+Considérer R² et p-values en fonction du modèle :
+
+- beaucoup de données individuelles $\to$ faible R² mais petites p-values pour montrer l'influence d'un facteur ;
+- possibilité d'un très grand R² sans aucun coefficient significatif si peu de points ;
+- un grand R² et des petites p-values permettent de faire des prédictions.
+
+
+## Prédictions
+
+`predict()` permet d'extrapoler le modèle.
+
+```{r}
+mod_l1_lm |> predict(newdata = data.frame(x = 5:10))
+```
+
+
+## Prédictions
+
+Ajout des points sur la figure :
+
+```{r}
+#| out.width: 40%
+# Estimation du modèle
+mod_l1 |> 
+  ggplot(aes(x, y)) + geom_point() + geom_smooth(method = lm) -> 
+  mod_l1_ggplot
+# Choix des x pour lesquels y est à prédire
+mod_l1_predict <- data.frame(x = 5:10)
+# Ajout des prédictions
+mod_l1_predict$y <- predict(mod_l1_lm, newdata = mod_l1_predict)
+# Ajout des points à la figure précédente
+mod_l1_ggplot +
+  geom_point(data = mod_l1_predict, aes(x = x, y = y), col = "red")
+```
+
+## Intervalles de confiance et de prédiction
+
+La zone grisée de `geom_smooth` est l'intervalle de confiance de l'espérance de $Y|X$, c'est-à-dire de la moyenne des prédictions.
+Il est bien plus étroit que l'intervalle de prédiction, qui correspond à 95% des prédictions :
+
+```{r}
+mod_l1_predict <- data.frame(
+  x = seq(from = min(mod_l1$x), to = max(mod_l1$x), length.out = 50)
+)
+mod_l1_predict <- cbind(
+  mod_l1_predict,
+  predict(
+    mod_l1_lm, 
+    newdata = mod_l1_predict, 
+    interval = "prediction"
+  )
+)
+mod_l1_ggplot +
+  geom_ribbon(
+    data = mod_l1_predict, 
+    aes(y = fit, ymin = lwr, ymax = upr),
+    alpha = 0.3
+  ) -> mod_l1_ggplot_predict
+```
+
+## Intervalles de confiance et de prédiction
+
+```{r}
+#| echo: false
+mod_l1_ggplot_predict
+```
+
+# Régression linéaire multiple
+
+## Théorie
+
+Modèle linéaire multiple :
+$$Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \Epsilon$$
+$Y$ et $X_j$ sont des vecteurs : $X_1 = \{x_{i,1}\}$ est l'ensemble des valeurs du premier prédicteur (= variable explicative, variable exogène ou covariable).
+
+
+## Représentation
+
+Multidimensionnelle donc plus difficile.
+
+Le dimension de $Y$ est égale au nombre de covariables moins 1: le modèle linéaire réduit la dimension des données.
+
+Ajout d'un coefficient à l'exemple précédent :
+
+```{r}
+beta_0 <- 1
+beta_1 <- 0.5
+beta_2 <- 2
+sigma <- 5
+```
+
+Tirage :
+```{r}
+n <- 100
+x_1 <- runif(n, min = 5, max = 15)
+x_2 <- runif(n, min = 0, max = 10)
+# Jeu de points
+mod_l2 <- tibble(
+  x_1, x_2, 
+  y = rnorm(n, mean = beta_0 + beta_1*x_1 + beta_2*x_2, sd = sigma)
+)
+```
+
+
+## Représentation
+
+```{r}
+mod_l2_lm  <- lm(y ~ x_1 + x_2, data = mod_l2)
+```
+
+
+```{r}
+#| echo: false
+library("scatterplot3d")
+# Création du graphique 3D
+s3d <- scatterplot3d(
+  # Position des points, 3 colonnes x, y et z
+  mod_l2,
+  # Type de graphique : points
+  type = "p", 
+  # Cercles
+  pch = 19,
+  # Couleurs des points sous le plan, les autres seront retracés
+  color = "darkgrey",
+  # Afficher le repère à z =0
+  grid = TRUE, 
+  # Ne pas afficher de boîte autour du graphique
+  box = FALSE,
+  # Marges
+  mar = c(1, 1, 1, 1),
+  # Angle de vision (0 = horizontal)
+  angle = 60
+)
+# Quels points sont au-dessus du plan ?
+is_over <- resid(mod_l2_lm) > 0
+# Segments du point au plan
+y_xyz <- s3d$xyz.convert(mod_l2$x_1, mod_l2$x_2, mod_l2$y)
+ystar_xyz <- s3d$xyz.convert(mod_l2$x_1, mod_l2$x_2, fitted(mod_l2_lm))
+# Tracé des segments
+segments(
+  x0 = y_xyz$x, y0 = y_xyz$y, 
+  x1 = ystar_xyz$x, y1 = ystar_xyz$y, 
+  col = c("orange", "red")[1 + is_over],
+  # Pointillé ou plein selon la position
+  lwd = 1.5
+)
+# Redessiner les points en deux temps : sous le plan...
+s3d$points3d(
+  x = mod_l2$x_1[!is_over], y = mod_l2$x_2[!is_over], z = mod_l2$y[!is_over], 
+  pch = 19, 
+  col = "darkgrey"
+)
+# Tracer le plan de régression
+s3d$plane3d(
+  mod_l2_lm, 
+  draw_polygon = TRUE, 
+  draw_lines = TRUE
+)
+# ... puis au-dessus du plan
+s3d$points3d(
+  x = mod_l2$x_1[is_over], y = mod_l2$x_2[is_over], z = mod_l2$y[is_over], 
+  pch = 19, 
+  col = "black"
+)
+
+```
+
+## Hypothèses
+
+En plus des précédentes :
+
+- Non colinéarité des covariables.
+
+Si une des covariables est une combinaison linéaire des autres, le modèle ne peut pas être estimé.
+
+En pratique, les covariables doivent être aussi peu corrélées que possible.
+
+
+## Interactions
+
+On peut tester l'effet de l'interaction de deux variables :
+
+```{r}
+lm(y ~ x_1 + x_2 + x_1*x_2, data = mod_l2) |> summary()
+```
+
+
+# Ancova
+
+## Théorie
+
+Modèle de régression multiple avec des covariables catégorielles, codées sous forme d'indicatrices (autant d'indicatrices que de modalités - 1).
+
+$$Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + ... + \Epsilon$$
+
+Exemple du Ventoux :
+
+- $Y$ est la hauteur des arbres ;
+- $X_1$ est leur diamètre ;
+- L'espèce est codée par une variable indicatrice, par exemple $X_2 = \mathbb{1}("Cedre")$.
+
+
+## Exemple
+
+```{r}
+#| out.width: 70%
+ventoux |> 
+  ggplot(aes(x = diametre, y = hauteur, color = espece)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+## Estimation
+
+La figure représente *deux régressions séparées* : les pentes pourraient être différentes.
+Une Ancova est donc appropriée.
+
+`lm` crée automatiquement des indicatrices pour les variables catégorielles.
+
+```{r}
+(ventoux_lm <- lm(hauteur ~ diametre + espece, data = ventoux))
+```
+
+Ici, l'indicatrice vaut 1 pour les pins, 0 pour les cèdres.
+
+
+## Représentation
+
+La figure doit être construite manuellement
+
+```{r}
+ventoux |> 
+  bind_cols(predict(ventoux_lm, interval = "confidence")) |> 
+  ggplot(aes(x = diametre, color = espece)) +
+    geom_point(aes(y = hauteur)) +
+    geom_line(aes(y = fit)) +
+    geom_ribbon(aes(y = fit, ymin = lwr, ymax = upr),  alpha = 0.3)
+```
+
+
+
+
+<!-- Styles for HTML slides -->
+<style>
+  /* Allow long bibliography */
+  .forceBreak { -webkit-column-break-after: always; break-after: column; }
+  slides > slide { overflow: scroll; }
+  slides > slide:not(.nobackground):after { content: ''; }
+
+  /* First page logo size */
+  .gdbar img {
+    width: 200px !important;
+    height: 55px !important;
+    margin: 8px 8px;
+  }
+  .gdbar {
+    width: 250px !important;
+    height: 70px !important;
+  }
+  
+  /* No logo on slides */
+  slides > slide:not(.nobackground):before {
+    display:none
+  }
+</style>

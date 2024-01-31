@@ -1,5 +1,5 @@
 ---
-title: "TP: Le modèle linéaire"
+title: "TP statistiques bivariées"
 author: "Eric Marcon"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 url: https://EricMarcon.github.io/Cours-R-Geeft/
@@ -102,11 +102,72 @@ set.seed(973)
 ```
 
 
-# Régression linéaire simple
+# Comptages
 
-## Ventoux
+## Données
 
-Données du projet de dendrométrie 2020, Mont Ventoux.
+[Enquête de vie 2003](https://www.insee.fr/fr/statistiques/2532244) de l'INSEE
+
+```{r}
+library("questionr")
+data(hdv2003)
+```
+
+## Tableaux de contingence
+
+Tableau croisé de comptage.
+
+```{r}
+(tab_x <- table(hdv2003$sexe, hdv2003$cuisine))
+```
+
+## Test du $chi^2$
+
+Test de l'indépendance des lignes et des colonnes.
+
+Hypothèse nulle : la fréquence relative de chaque cellule du tableau est le produit des fréquences marginales.
+
+```{r}
+n <- sum(tab_x)
+sexe_f <- rowSums(tab_x) / n
+cuisine_f <- colSums(tab_x) / n
+outer(sexe_f, cuisine_f, `*`) * n
+```
+La somme des carrés des écarts des effectifs divisés par la valeur attendue suit une loi du $\chi_2$ à $(I -1) \times (J - 1)$ degrés de liberté (I et J sont les nombres de lignes et colonnes)
+
+## Test du $chi^2$
+
+```{r}
+chisq.test(tab_x)
+```
+
+Les écarts sont significatifs avec une p-value proche de 0.
+
+
+## Graphique
+
+```{r}
+#| out.width: 60%
+mosaicplot(tab_x, shade = TRUE, main = "")
+```
+
+L'argument `shade = TRUE` affiche les résidus du test qui [suivent approximativement une loi normale centrée réduite](https://www.normalesup.org/~carpenti/Notes/Khi2-Contingence/Chi-2-et-Residus.pdf) (la valeur critique 2 correspond à 95% de confiance).
+
+
+# Variables continues
+
+## Covariance
+
+La covariance entre $X$ et $Y$, deux variables aléatoires, est
+$$\mathrm{Cov}(X, Y) = \mathbb{E}[(X - \mathbb{E}(X))(Y - \mathbb{E}(Y))]$$
+donc $$\mathrm{var}(X) = \mathrm{Cov}(X, X)$$
+
+Empiriquement :
+$$\hat{\mathrm{Cov}}(X, Y) = \frac{1}{n - 1}\sum_i{(x_i - \bar{x})(y_j - \bar{y})}$$
+
+## Estimation
+
+Données Ventoux.
 
 ```{r}
 read_csv2("data/Inv_GEEFT_Ventoux_09-2020.csv") |> 
@@ -114,369 +175,39 @@ read_csv2("data/Inv_GEEFT_Ventoux_09-2020.csv") |>
     espece = Espèce, 
     diametre = `Diamètre (cm)`, 
     hauteur = `Hauteur réelle (m)`
-  ) |> 
-  mutate(
-    espece = case_match(
-      espece, 
-      "P" ~ "Pin",
-      "C" ~ "Cèdre"
-    )
-  ) ->
-  ventoux
+  ) -> ventoux
 ```
 
-
-## Graphique hauteur ~ diamètre
+La hauteur des arbres covarie positivement avec le diamètre.
 
 ```{r}
-#| out.width: 70%
-ventoux |> 
-  ggplot(aes(x = diametre, y = hauteur)) +
-  geom_point(aes(col = espece)) +
-  geom_smooth(method = "lm")
+with(ventoux, cov(hauteur, diametre))
 ```
 
+## Corrélation de Pearson
 
-## Théorie
+Pour simplifier l'interprétation, on normalise la covariance par le produit des écarts-types :
 
-Modèle linéaire simple :
-$$Y = \beta_0 + \beta_1 X + \Epsilon$$
-$Y$ et $X$ sont des vecteurs : $Y = \{y_i\}$ est l'ensemble des observations. Par abus d'écriture, $Y$ est aussi la variable aléatoire dont les $y_i$ sont des réalisations.
+$$\mathrm{Cor}(X, Y) = \frac{\mathrm{Cov}(X, Y)}{\sqrt{(\mathrm{var}(X)\mathrm{var}(Y))}}$$
+Donc $\mathrm{Cor}(X, X) = 1$ et $\mathrm{Cor}(X, -X) = -1$.
 
-Vocabulaire : variable expliquée, exogène, coefficients, constante (intercept)...
-
-$\Epsilon = \{\epsilon_i\}$ est l'erreur du modèle. $\Epsilon \sim \mathcal{N}(0,\sigma^{2})$
- 
-
-## Représentation 
-
-Le modèle prédit une densité de probabilité des valeurs de $Y$ pour toute valeur de $X$ distribuée normalement autour de la droite de régression.
+La covariance est comprise entre -1 et 1.
 
 ```{r}
-#| echo: false
-#| label: mod_l1_params
-beta0 <- 1
-beta1 <- 0.5
-sigma <- 1
+with(ventoux, cor(hauteur, diametre))
 ```
+Les données sont très corrélées (le test viendra plus tard).
 
+
+## Corrélation de Spearman
+
+Les valeurs des données sont remplacées par leurs rangs.
 
 ```{r}
-#| echo: false
-n_fig <- 20
-# Jeu de points
-mod_l1fig <- tibble(
-  x = rnorm(n_fig, mean = 10, sd = 2), # x est calculé avant y 
-  y = rnorm(n_fig, mean = beta0 + beta1 * x, sd = sigma) # y utilise x
-)
-# Points y*
-x0 <- 7:13
-mod_l1fig_predict <- tibble(x = x0, y = beta0 + beta1 * x0)
-# Distribution autour de y*. Le nombre de points doit être multiple de lengh(x0)
-norm_dta <- tibble(
-  y = rnorm(7000, mean = beta0 + beta1 * x0, sd = sigma), 
-  x = x0 + dnorm(x = y- beta0 - beta1 * x0, mean = 0,  sd = 0.7)
-)
-# Figure
-ggplot() + 
-  # Jeu de points
-  geom_point(data = mod_l1fig, aes(x = x, y = y)) +
-  # Ajustement du modèle
-  geom_abline(slope = beta1, intercept = beta0) + 
-  # Points y*
-  geom_point(data = mod_l1fig_predict, aes(x = x, y = y), col = 'red') +
-  # Distribution autour de y*
-  geom_point(data = norm_dta, aes(x = x, y = y), col = 'red', alpha=0.02) +
-  xlim(c(5, 15)) + ylim(c(2, 10))
+with(ventoux, cor(hauteur, diametre, method = "spearman"))
 ```
 
-
-## Hypothèses
-
-- Indépendance des erreurs : $\mathrm{Cov}(\epsilon_i, \epsilon_j) = 0$.
-Assurée par le design expérimental.
-
-- Exogénéité : $X$n'est pas corrélé à $\Epsilon$.
-
-- Homoscédasticité : la variance de l'erreur est constante sur l'étendue de $X$.
-
-- Normalité des termes d'erreur : $\Epsilon \sim \mathcal{N}(0,\sigma^{2})$.
-
-
-## Exemple
-
-Générer les données du modèle.
-
-Coefficients : 
-```{r}
-beta0 <- 1
-beta1 <- 0.5
-sigma <- 1
-```
-
-Tirage :
-```{r}
-n <- 100
-x <- runif(n, min = 5, max = 15)
-# Jeu de points
-mod_l1 <- tibble(x, y = rnorm(n, mean = beta0 + beta1*x, sd =sigma))
-```
-
-
-## Estimation
-
-Commencer par une figure.
-
-```{r}
-#| out.width: 40%
-mod_l1 |> 
-  ggplot(aes(x = x, y = y)) + geom_point() + geom_smooth(method = lm)
-```
-
-
-La fonction `lm()` du package *stats* estime le modèle et permet de tester les hypothèses.
-
-```{r}
-mod_l1_lm <- lm(y ~ x, data = mod_l1)
-```
-
-
-## Homoscédasticité et indépendance des erreurs
-
-Graphique $\Epsilon \sim Y*$
-
-```{r}
-#| out.width: 60%
-plot(mod_l1_lm, which = 1)
-```
-
-Les erreurs doivent être centrée sur 0 et uniformément réparties.
-
-
-## Normalité des erreurs
-
-Graphique quantile - quantile (`?qqplot`)
-
-```{r}
-#| out.width: 60%
-plot(mod_l1_lm, which = 2)
-```
-
-La non-normalité des résidus implique la non-normalité des estimateurs des coefficients. 
-
-
-## Effet de levier
-
-```{r}
-#| out.width: 60%
-plot(mod_l1_lm, which = 5)
-```
-Les points avec fort effet de levier forte erreur ($\to$ grande distance de Cook) posent problème.
-
-
-## Rectification des données
-
-Affaire d'expérience.
-
-- Éliminer les points (réellement) aberrants ;
-- Transformer $Y$ si :
-  - la relation n'est pas linéaire (ex.: quadratique) ;
-  - l'erreur augmente avec $Y*$ ($\to$ racine carrée ou logarithme).
-- Revoir les hypothèses à l'origine du modèle, le design expérimental...
-
-
-## Interprétation des résultats : `summary`
-
-```{r}
-#| echo: false
-summary(mod_l1_lm)
-```
-
-## Statistique F
-
-La statistique F décrit la probabilité que le modèle n'explique rien.
-
-Modèle nul: $Y = \bar{Y} = \beta_0$
-
-```{r}
-#| echo: false
-# Jeu de points
-mod_l1null <- tibble(
-  x = mod_l1fig$x,
-  y = rnorm(n_fig, mean = beta0, sd = sigma)
-)
-# Points y*
-x0 <- 7:13
-mod_l1null_predict <- tibble(x = x0, y = beta0)
-# Distribution autour de y*. Le nombre de points doit être multiple de lengh(x0)
-norm_dta <- tibble(
-  y = rnorm(7000, mean = beta0, sd = sigma), 
-  x = x0 + dnorm(x = y- beta0, mean = 0,  sd = 0.7)
-)
-# Figure
-ggplot() + 
-  # Jeu de points
-  geom_point(data = mod_l1null, aes(x = x, y = y)) +
-  # Ajustement du modèle
-  geom_hline(yintercept = beta0) + 
-  # Points y*
-  geom_point(data = mod_l1null_predict, aes(x = x, y = y), col = 'red') +
-  # Distribution autour de y*
-  geom_point(data = norm_dta, aes(x = x, y = y), col = 'red', alpha=0.02) +
-  xlim(c(5, 15)) + ylim(c(-2, 3))
-```
-
-
-## R²
-
-R² mesure la proportion de la variance de Y expliquée par le modèle : 
-$$R^2 = \frac{\mathrm{Var}(Y^\star)}{\mathrm{Var}(Y)} = 1 - \frac{\sigma}{\mathrm{Var}(Y)}$$
-
-
-$\to$ Que devient R² en doublant $\sigma$ ?
-Estimer rapidement puis resimuler le modèle pour vérifier.
-
-R² ajusté pénalise le R² par le nombre de paramètres du modèle. 
-
-Les degrés de liberté sont le nombre d'observations moins le nombre de paramètres moins 1.
-
-
-## Estimation des coefficients
-
-Les coefficients sont estimés par la méthode des moindres carrés : minimisation des écarts $$\sum(y_i - y_i^\star)^2$$.
-
-Résultat identique à la maximisation de la vraisemblance $$\prod{f(\epsilon_i)}$$ où $f(\dot)$ est la densité de $\mathcal{N}(0,\sigma^{2})$.
-
-
-## Estimation des coefficients
-
-L'estimateur de chaque coefficient est sa valeur la plus probable.
-
-L'estimateur est distribué normalement (quand $\Epsilon$ est normal) :
-
-$$\hat{\beta}_1 \sim \mathcal{N}(`r format(mod_l1_lm$coefficients[2], digits = 3)`, `r format(summary(mod_l1_lm)$coefficients[2, 2], digits = 3)`^{2})$$
-
-Un test de Student donne la probabilité de se tromper en affirmant que l'estimateur n'est pas nul.
-
-
-## Synthèse 1/2
-
-Un bon modèle a un grand R² et des petites p-values.
-
-- R² diminue avec la variance de l'erreur ;
-- L'écart-type des estimateur diminue comme $\sqrt{n}$.
-
-Mais les deux dépendent du design expérimental.
-
-
-## Design expérimental
-
-Quadrupler l'effort d'échantillonnage divise par deux l'intervalle de confiance
-
-```{r}
-mod_l1x4 <- tibble(
-  x = rnorm(n * 4, mean = 10, sd = 2), # x est calculé avant y 
-  y = rnorm(n * 4, mean = beta0 + beta1 * x, sd =sigma) # y utilise x
-)
-mod_l1x4_lm <- lm(y ~ x, data = mod_l1x4)
-summary(mod_l1x4_lm)$coefficients
-```
-
-Choix économique.
-
-
-## Design expérimental
-
-Retirer les valeurs intermédiaires de $X$ augmente le R² (*design factoriel*) alors que $\sigma$ ne change pas.
-
-```{r}
-mod_l1x4 |> 
-  filter(x < 6 | x >14) %>% # pas |> pour "data = ."
-  lm(y ~ x, data = .) |> 
-  summary() |> 
-  pluck("r.squared")
-```
-
-contre `r summary(mod_l1x4_lm)$r.squared` avec toutes les données.
-
-
-## Design expérimental
-
-Le R² d'un modèle avec des données individuelles est plus faible qu'avec des données agrégées.
-
-$\to$ Estimer le modèle hauteur ~ diamètre des données Ventoux.
-$\to$ Regrouper les données par espèce.
-$\to$ Estimer le modèle à nouveau.
-
-
-## Synthèse 2/2
-
-Considérer R² et p-values en fonction du modèle :
-
-- beaucoup de données individuelles $\to$ faible R² mais petites p-values pour montrer l'influence d'un facteur ;
-- possibilité d'un très grand R² sans aucun coefficient significatif si peu de points ;
-- un grand R² et des petites p-values permettent de faire des prédictions.
-
-
-## Prédictions
-
-`predict()` permet d'extrapoler le modèle.
-
-```{r}
-mod_l1_lm |> predict(newdata = data.frame(x = 5:10))
-```
-
-
-## Prédictions
-
-Ajout des points sur la figure :
-```{r}
-#| out.width: 40%
-# Estimation du modèle
-mod_l1 |> 
-  ggplot(aes(x, y)) + geom_point() + geom_smooth(method = lm) -> 
-  mod_l1_ggplot
-# Choix des x pour lesquels y est à prédire
-mod_l1_predict <- data.frame(x = 5:10)
-# Ajout des prédictions
-mod_l1_predict$y <- predict(mod_l1_lm, newdata = mod_l1_predict)
-# Ajout des points à la figure précédente
-mod_l1_ggplot +
-  geom_point(data = mod_l1_predict, aes(x = x, y = y), col = "red")
-```
-
-## Intervalles de confiance et de prédiction
-
-La zone grisée de `geom_smooth` est l'intervalle de confiance de l'espérance de $Y|X$, c'est-à-dire de la moyenne des prédictions.
-
-Il est bien plus étroit que l'intervalle de prédiction, qui correspond à 95% des prédictions :
-
-```{r}
-mod_l1_predict <- data.frame(
-  x = seq(from = min(mod_l1$x), to = max(mod_l1$x), length.out = 50)
-)
-mod_l1_predict <- cbind(
-  mod_l1_predict,
-  predict(
-    mod_l1_lm, 
-    newdata = mod_l1_predict, 
-    interval = "prediction"
-  )
-)
-mod_l1_ggplot +
-  geom_ribbon(
-    data = mod_l1_predict, 
-    aes(y = fit, ymin = lwr, ymax = upr),
-    alpha = 0.3
-  ) -> mod_l1_ggplot_predict
-```
-
-## Intervalles de confiance et de prédiction
-
-```{r}
-#| echo: false
-mod_l1_ggplot_predict
-```
+Remarquer la proximité des valeurs.
 
 
 
