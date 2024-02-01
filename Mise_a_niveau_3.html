@@ -9,7 +9,7 @@
 
 
 
-  <meta name="date" content="2024-01-31" />
+  <meta name="date" content="2024-02-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3207,7 +3207,7 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">31 January 2024</p>
+            <p style="margin-top: 6px; margin-left: -2px;">01 February 2024</p>
           </hgroup>
   </slide>
 
@@ -3252,7 +3252,7 @@ sqrt(x1)</pre>
 ##         return(Log)
 ##     }
 ## }
-## &lt;bytecode: 0x7fba0fde8e30&gt;
+## &lt;bytecode: 0x7f9d84a60550&gt;
 ## &lt;environment: namespace:entropart&gt;</pre>
 
 <p></p>
@@ -3299,10 +3299,10 @@ mb &lt;- microbenchmark(sqrt(x1), sapply(x1, FUN = sqrt),
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##                              expr   median
-## 1                        sqrt(x1)  11.6540
-## 2          sapply(x1, FUN = sqrt) 692.6340
-## 3                lapply(x1, sqrt) 587.9465
-## 4 vapply(x1, sqrt, FUN.VALUE = 0) 593.5220</pre>
+## 1                        sqrt(x1)  13.3150
+## 2          sapply(x1, FUN = sqrt) 782.9535
+## 3                lapply(x1, sqrt) 578.5610
+## 4 vapply(x1, sqrt, FUN.VALUE = 0) 602.1990</pre>
 
 <p></p>
 
@@ -3328,8 +3328,8 @@ mb &lt;- microbenchmark(vapply_sqrt(x1), boucle(x1))
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##              expr   median
-## 1 vapply_sqrt(x1) 392.4390
-## 2      boucle(x1) 939.6225</pre>
+## 1 vapply_sqrt(x1)  430.482
+## 2      boucle(x1) 1066.359</pre>
 
 <p></p>
 
@@ -3443,12 +3443,9 @@ mb &lt;- microbenchmark(
 )
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
-<pre >##                                       expr
-## 1 apply(paracou6_x, MARGIN = 2, FUN = sum)
-## 2                      colSums(paracou6_x)
-##    median
-## 1 38.9395
-## 2  6.5530</pre>
+<pre >##                                       expr median
+## 1 apply(paracou6_x, MARGIN = 2, FUN = sum) 44.808
+## 2                      colSums(paracou6_x)  7.973</pre>
 
 <pre class = 'prettyprint lang-r'>colSums(paracou6_x)</pre>
 
@@ -3470,9 +3467,9 @@ summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 <pre >##                                           expr
 ## 1 apply(paracou6_x, 2, function(x) sum(x &gt; 0))
 ## 2                      colSums(paracou6_x &gt; 0)
-##    median
-## 1 50.0920
-## 2 12.1735</pre>
+##     median
+## 1 177.4220
+## 2  35.7265</pre>
 
 <pre class = 'prettyprint lang-r'>colSums(paracou6_x &gt; 0)</pre>
 
