@@ -1,5 +1,5 @@
 ---
-title: "Le modèle linéaire"
+title: "Régression linéaire"
 author: "Eric Marcon"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 url: https://EricMarcon.github.io/Cours-R-Geeft/
@@ -272,6 +272,30 @@ plot(mod_l1_lm, which = 2)
 La non-normalité des résidus implique la non-normalité des estimateurs des coefficients. 
 
 
+## Test de normalité
+
+Utiliser le test de Shapiro-Wilk :
+
+```{r}
+mod_l1_lm |> residuals() |> shapiro.test()
+```
+La p-value est la probabilité de se tromper en rejetant l'hypothèse nulle de normalité des données.
+Attention : la puissance du test augmente avec la taille de l'échantillon (limité à 5000).
+
+## Test de Kolmogorov-Smirnov
+
+Teste l'hypothèse que deux échantillons sont issus de la même distribution :
+
+```{r}
+mod_l1_lm |> residuals() %>% ks.test(rnorm(length(.), 0, var(.)))
+```
+
+Plus général que Shapiro-Wilk.
+
+$\to$ tester un tirage dans une loi uniforme contre une distribution normale.
+Combien de valeurs faut-il pour rejeter H0 ?
+
+
 ## Effet de levier
 
 ```{r}
@@ -487,6 +511,7 @@ mod_l1_ggplot +
 mod_l1_ggplot_predict
 ```
 
+
 # Régression linéaire multiple
 
 ## Théorie
@@ -607,6 +632,35 @@ lm(y ~ x_1 + x_2 + x_1*x_2, data = mod_l2) |> summary()
 ```
 
 
+## Standardisation
+
+Il est possible de standardiser toutes les variables pour comparer les effets des covariables.
+
+
+```{r}
+lm(scale(y) ~ 0 + scale(x_1) + scale(x_2), data = mod_l2) |> summary()
+```
+
+## Standardisation
+
+Dans un modèle linéaire standardisé simple, le coefficient égale la corrélation.
+
+```{r}
+lm(scale(y) ~ scale(x), data = mod_l1) |> summary()
+```
+
+
+## Test de la corrélation
+
+La significativité de la corrélation entre deux variables est celle du coefficient de la régression standardisée.
+
+Plus simplement :
+
+```{r}
+with(mod_l1, cor.test(x, y))
+```
+
+
 # Ancova
 
 ## Théorie
@@ -658,8 +712,6 @@ ventoux |>
     geom_line(aes(y = fit)) +
     geom_ribbon(aes(y = fit, ymin = lwr, ymax = upr),  alpha = 0.3)
 ```
-
-
 
 
 <!-- Styles for HTML slides -->
