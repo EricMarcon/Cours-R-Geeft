@@ -111,6 +111,22 @@ set.seed(973)
 
 ## Intuition
 
+```{r}
+#| include: false
+read_csv2("data/Inv_GEEFT_Ventoux_09-2020.csv") |> 
+  rename(
+    espece = Espèce, 
+    diametre = `Diamètre (cm)`, 
+    hauteur = `Hauteur réelle (m)`
+  ) |> 
+  mutate(
+    espece = case_match(
+      espece, 
+      "P" ~ "Pin",
+      "C" ~ "Cèdre"
+    )
+  ) -> ventoux
+```
 Les cèdres sont-ils plus haut que les pins ?
 
 ```{r}
