@@ -30,12 +30,21 @@ Données, fonctions, structures de contrôle, graphiques de base :
 - [Introduction à R et au tidyverse](https://juba.github.io/tidyverse/03-premier_travail.html) : Premier travail avec des données.
 - [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : [Introduction à R - Partie 1](https://pmarchand1.github.io/ECL7102/labos/1-IntroR_partie2.html)
 
+
 ## TP 2
 
 Statistiques univariées et lois de probabilité :
 
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/TP_2.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/TP_2.pdf)
 - [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : [Modèles statistiques et intervalles de confiance](https://pmarchand1.github.io/ECL7102/notes_cours/3-Modeles_statistiques.html)
+
+
+## Contrôle de source
+
+Utilisation de git et Github :
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/git.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/git.pdf)
+- [Travailler avec R](https://ericmarcon.github.io/travailleR/chap-git.html) : Git et Github.
 
 
 ## Le tidyverse 1/2
@@ -73,13 +82,21 @@ Visualisation des données :
 - [Le package *sf* pour la géomatique](https://www.paulamoraga.com/book-spatial/the-sf-package-for-spatial-vector-data.html)
 
 
+## Rédiger avec R
+
+Production de documents reproductibles :
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Redaction.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Redaction.pdf)
+- [Travailler avec R](https://ericmarcon.github.io/travailleR/chap-rediger.html) : Rédiger.
+- [Travailler avec R](https://ericmarcon.github.io/travailleR/chap-ci.html) : Intégration continue.
+
+
 ## Mise à niveau R 3/3
 
 Vectorisation, boucles, fonctions *x*apply() :
 
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Mise_a_niveau_3.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Mise_a_niveau_3.pdf)
 - [Travailler avec R](https://ericmarcon.github.io/travailleR/chap-utiliseR.html#boucles) : Boucles.
-
 
 
 ## TP 5
@@ -104,19 +121,13 @@ Supports :
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Anova.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Anova.pdf)
 
 
-## Contrôle de source
+## Tests
 
-Utilisation de git et Github :
+Supports :
 
-- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/git.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/git.pdf)
-- [Travailler avec R](https://ericmarcon.github.io/travailleR/chap-git.html) : Git et Github.
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Tests.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Tests.pdf)
 
 
-## Rédiger avec R
+## Méthodes d'ordination
 
-Production de documents reproductibles :
-
-- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Redaction.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Redaction.pdf)
-- [Travailler avec R](https://ericmarcon.github.io/travailleR/chap-rediger.html) : Rédiger.
-- [Travailler avec R](https://ericmarcon.github.io/travailleR/chap-ci.html) : Intégration continue.
-
+A venir.
