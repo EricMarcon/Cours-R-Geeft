@@ -641,6 +641,7 @@ Il est possible de standardiser toutes les variables pour comparer les effets de
 lm(scale(y) ~ 0 + scale(x_1) + scale(x_2), data = mod_l2) |> summary()
 ```
 
+
 ## Standardisation
 
 Dans un modèle linéaire standardisé simple, le coefficient égale la corrélation.
@@ -661,6 +662,32 @@ with(mod_l1, cor.test(x, y))
 ```
 
 
+# Régression sur les rangs
+
+## Théorie
+
+Si les résidus ne sont pas normaux, il est possible de faire la régression sur les rangs des variables :
+
+- régression simple : revient à tester la corrélation de Spearman.
+
+
+## Exemple
+
+Modèle univarié :
+
+```{r}
+lm(rank(y) ~ rank(x), data = mod_l1)|> summary()
+```
+## Exemple
+
+Test de la corrélation :
+
+```{r}
+with(mod_l1, cor.test(x, y, method = "spearman"))
+```
+Les modèles sont équivalents et donnent la même p-value.
+
+
 # Ancova
 
 ## Théorie
@@ -673,7 +700,7 @@ Exemple du Ventoux :
 
 - $Y$ est la hauteur des arbres ;
 - $X_1$ est leur diamètre ;
-- L'espèce est codée par une variable indicatrice, par exemple $X_2 = \mathbb{1}("Cedre")$.
+- L'espèce est codée par une variable indicatrice, par exemple $X_2 = \mathbb{1}('Cedre')$.
 
 
 ## Exemple
@@ -712,6 +739,12 @@ ventoux |>
     geom_line(aes(y = fit)) +
     geom_ribbon(aes(y = fit, ymin = lwr, ymax = upr),  alpha = 0.3)
 ```
+
+
+
+
+
+
 
 
 <!-- Styles for HTML slides -->
