@@ -182,7 +182,7 @@ diamonds %$% mean(price)
 diamonds %>% pull(price) %>% mean()
 ```
 
-Le tuyau de base est accessible sans charger *magrittr*.
+Le tuyau de base est fournit aussi par *dplyr*, chargé par *tidyverse*, contrairement à *magrittr*.
 
 Les autres sont peu utilisés, à éviter.
 
@@ -229,9 +229,9 @@ Importation dans un tibble.
 
 ## Fichier csv
 
-Fonctions `read_csv()` et `read_csv2()`
+Fonctions `read_csv()` et `read_csv2()`.
 
-Remplacent `read.csv()` et `read.csv2()` de base
+Remplacent `read.csv()` et `read.csv2()` de base.
 
 Plus rapide que les fonctions originales.
 
@@ -243,7 +243,7 @@ Plus rapide que les fonctions originales.
 knitr::include_graphics("images/tidy-1.png")
 ```
 
-Approche habituelle en écologie (analyse multivariée par exemple)
+Approche habituelle en écologie (analyse multivariée par exemple).
 
 Si les données sont mal rangées ("pas tidy"), quelques manipulations de base.
 
@@ -270,6 +270,7 @@ Famille, genre et espèce des arbres sont dans 3 colonnes.
 Créer une colonne avec le nom complet de l'espèce.
 
 ```{r, tidy=FALSE}
+library("dplyr")
 paracou6 |> 
   unite(col = spName, Family, Genus, Species, remove = FALSE) ->
   paracou6
