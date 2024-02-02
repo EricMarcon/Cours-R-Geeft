@@ -190,9 +190,7 @@ Documentation dans les modèles.
 Un projet R contient tout :
 
 - Modèle de document ; Fichiers nécessaire à la mise en forme (styles de texte, de bibliographie, ...) ;
-
 - Données ; Code R pour produire les résultats, y compris les figures ;
-
 - Figures additionnelles.
 
 
@@ -360,6 +358,22 @@ Fichiers raster pour les rasters ou demandes particulières.
 Fonctions : `agg_png()`, `agg_jpeg()` et `agg_tiff()`.
 
 Utilisable par RStudio >=1.4 et par **knitr**.
+
+
+## ggplot
+
+La fonction `ggsave()` enregistre un graphique dans un fichier :
+
+```{r}
+#| out.width: 70%
+library("tidyverse")
+mtcars |> 
+  ggplot(aes(mpg, wt)) +
+  geom_point()
+# Sauvegarde du dernier graphique affiché
+ggsave("Fig1.pdf", width = 6, height = 4)
+```
+
 
 
 ## Points de vigilance
