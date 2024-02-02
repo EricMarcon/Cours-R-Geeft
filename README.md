@@ -89,12 +89,19 @@ Statistiques bivariées :
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/TP_5.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/TP_5.pdf)
 
 
-## Le modèle linéaire
+## La régression linéaire
 
 Supports :
 
-- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Modele_lineaire.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Modele_lineaire.pdf)
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Regression_lineaire.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Regression_lineaire.pdf)
 - [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : [Régression linéaire simple](https://pmarchand1.github.io/ECL7102/notes_cours/6-Regression_lineaire.html)
+
+
+## L'Anova
+
+Supports :
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Anova.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Anova.pdf)
 
 
 ## Contrôle de source

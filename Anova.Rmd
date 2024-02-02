@@ -1,0 +1,377 @@
+---
+title: "Anova"
+author: "Eric Marcon"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+url: https://EricMarcon.github.io/Cours-R-Geeft/
+github-repo: EricMarcon/Cours-R-Geeft
+bibliography: references.bib
+biblio-style: chicago
+urlcolor: blue
+output:
+  bookdown::beamer_presentation2:
+    latex_engine: xelatex
+    includes:
+      in_header: latex/header.tex
+    citation_package: natbib
+    slide_level: 2
+    df_print: default
+    number_sections: no
+    toc: no
+    fig_caption: no
+    keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
+---
+
+```{r}
+#| label: DoNotModify
+#| include: false
+### Utilities. Do not modify.
+# Installation of packages if necessary
+InstallPackages <- function(Packages) {
+  InstallPackage <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {
+      install.packages(Package, repos = "https://cran.rstudio.com/")
+    }
+  }
+  invisible(sapply(Packages, InstallPackage))
+}
+
+# Basic packages
+InstallPackages(c("bookdown", "formatR", "kableExtra", "ragg"))
+
+# kableExtra must be loaded 
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "docx") {
+  # Word output (https://stackoverflow.com/questions/35144130/in-knitr-how-can-i-test-for-if-the-output-will-be-pdf-or-word)
+  # Do not use autoformat (https://github.com/haozhu233/kableExtra/issues/308)
+  options(kableExtra.auto_format = FALSE)
+}
+library("kableExtra")
+
+# Chunk font size hook: allows size='small' or any valid Latex font size in chunk options
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r}
+#| label: Options
+#| include: false
+### Customized options for this document
+# Add necessary packages here
+Packages <- c(
+  "tidyverse",
+  "car",
+  "palmerpenguins",
+  "multcomp",
+  "multcompView",
+  "ggstatsplot"
+)
+# Install them
+InstallPackages(Packages)
+
+# knitr options
+knitr::opts_chunk$set(
+  cache =   TRUE,     # Cache chunk results
+  include = TRUE,     # Show/Hide chunks
+  echo =    TRUE,     # Show/Hide code
+  warning = FALSE,    # Show/Hide warnings
+  message = FALSE,    # Show/Hide messages
+  # Figure alignment and size
+  fig.align = 'center', out.width = '80%',
+  # Graphic devices (ragg_png is better than standard png)
+  dev = c("ragg_png", "pdf"),
+  # Code chunk format
+  tidy = FALSE, tidy.opts = list(blank = FALSE, width.cutoff = 50),
+  size = "scriptsize", knitr.graphics.auto_pdf = TRUE
+)
+options(width = 50)
+
+# ggplot style
+library("tidyverse")
+theme_set(theme_bw())
+theme_update(
+  panel.background = element_rect(fill = "transparent", colour = NA),
+  plot.background = element_rect(fill = "transparent", colour = NA)
+)
+knitr::opts_chunk$set(dev.args = list(bg = "transparent"))
+
+# Tibbles: 5 lines, fit to slide width
+options(tibble.print_min = 5, tibble.width = 50)
+
+# Random seed
+set.seed(973)
+```
+
+
+# Anova à 1 facteur
+
+## Intuition
+
+Les cèdres sont-ils plus haut que les pins ?
+
+```{r}
+ventoux |> 
+  ggplot(aes(x = espece, y = hauteur)) +
+  geom_boxplot()
+```
+
+## Théorie
+
+Modèle de régression avec des covariables toutes catégorielles, codées sous forme d'indicatrices (autant d'indicatrices que de modalités - 1).
+
+Exemple du Ventoux :
+
+$$Y = \beta_0 + \beta_1 \mathbb{1}('Cedre') + \Epsilon$$
+
+Ici, deux modalités seulement $\to$ quelle autre méthode utiliser ?
+
+L'Anova à un facteur étend le test de Student à plus de deux groupes, comme le test de Welch (`oneway.test()`), non traité ici.
+
+
+## `aov()`
+
+```{r}
+aov(hauteur ~ espece, data = ventoux) %>% {. ->> ventoux_aov} |> summary()
+```
+
+La hauteur des arbres est différente entre les espèces.
+
+La statistique de test est le rapport entre les sommes des carrés des écarts intergroupe et intragroupe, divisés par leurs degrés de liberté, qui suit une loi de Fisher (F).
+
+
+## Hypothèses
+
+Celles du modèle linéaire.
+
+- Homoscédasticité : la variance de l'erreur est identique entre les groupes.
+
+
+## Homoscédasticité
+
+Graphique $\Epsilon \sim Y^\star$
+
+```{r}
+#| out.width: 60%
+plot(ventoux_aov, which = 1)
+```
+
+Les erreurs doivent être centrée sur 0 et uniformément réparties.
+
+
+## Homoscédasticité
+
+Le test de Levene invalide l'hypothèse nulle d'égalité des variances.
+
+```{r}
+library("car")
+with(ventoux, leveneTest(hauteur ~ espece))
+```
+
+## Anova non paramétrique
+
+Il faut utiliser le test de Kruskal-Wallis, qui est un modèle linéaire sur les rangs.
+
+```{r}
+kruskal.test(hauteur ~ espece, data = ventoux)
+```
+
+Le test de Kruskal-Wallis étend le test de Spearman à plus de deux groupes.
+
+
+# Plus de deux groupes
+
+## Manchots
+
+Exemple [traité en détail](https://statsandr.com/blog/anova-in-r/) par Antoine Soetewey.
+
+Les données sont les longueurs des nageoires de trois espèces de manchots.
+
+```{r}
+#| out.width: 70%
+library("palmerpenguins")
+with(penguins, boxplot(flipper_length_mm ~ species))
+```
+
+## Anova
+
+```{r}
+aov(flipper_length_mm ~ species, data = penguins) %>%
+  {. ->> penguins_aov} |>
+  summary()
+```
+
+$\to$ Vérifiez le respect des hypothèses
+
+Les trois espèces n'ont pas toutes les mêmes longueur de nageoires...
+Mais encore ? $\to$ Tests post-hoc.
+
+
+## Tests de Tukey
+
+Le test de Tukey compare tous les groupes deux à deux.
+
+```{r}
+library("multcomp")
+penguins_aov |> glht(linfct = mcp(species = "Tukey")) %>% 
+  {. ->> penguins_tukey} |> summary() 
+```
+
+## Le problème des tests multiples
+
+Le seuil de risque de 5% signifie que 5% des tests seront des faux positifs.
+
+Avec 7 groupes, on fait $6 \times 7 / 2 = 21$ tests d'égalité, donc on attend un faux positif.
+
+Solution : réduire le seuil de risque $\alpha_m$ (pour *multiple*) :
+$$\alpha_m = 1 - (1 - \alpha)^n \approx \alpha / n$$
+C'est la correction de *Bonferroni*.
+
+## Test de Dunett
+
+Si un groupe est la référence (par exemple, le témoin), utiliser le test de Dunett, plus puissant.
+
+Le groupe de référence est le premier des facteurs.
+
+```{r}
+str(penguins$species)
+```
+Il peut être modifié :
+```{r}
+penguins$species <- relevel(penguins$species, ref = "Gentoo")
+str(penguins$species)
+```
+
+## Test de Dunett
+
+```{r}
+penguins_aov |> glht(linfct = mcp(species = "Dunnett")) |> summary()
+```
+
+
+## Graphiques
+
+Objectif : ajouter les informations de l'Anova aux boîtes à moustache.
+
+Avec *ggstatsplot* :
+
+```{r}
+#| label: ggstatsplot
+#| eval: false
+library("ggstatsplot")
+penguins |> 
+  ggbetweenstats(
+    x = species,
+    y = flipper_length_mm,
+    type = "parametric", # ANOVA or Kruskal-Wallis
+    var.equal = TRUE, # ANOVA or Welch ANOVA
+    plot.type = "box",
+    pairwise.comparisons = TRUE,
+    pairwise.display = "significant",
+    centrality.plotting = FALSE,
+    bf.message = FALSE
+  )
+```
+
+## Graphiques
+
+*ggstatsplot* :
+
+```{r}
+#| ref.label: ggstatsplot
+#| echo: false
+```
+
+
+## Graphiques
+
+Graphique plus sobre, selon [Rosane Rech](https://statdoe.com/one-way-anova-and-box-plot-in-r/).
+
+Les groupes identiques sont habituellement marqués par des lettres.
+```{r}
+# Test de Tukey du package stats (moins détaillé que celui de multcomp)
+penguins_tukey <- TukeyHSD(penguins_aov)
+library("multcompView")
+(penguins_letters <- multcompLetters4(penguins_aov, penguins_tukey))
+# Préparation d'un tibble contenant les lettres (format compliqué)
+penguins_letters_tb <- tibble(
+  species = names(penguins_letters[[1]]$Letters), 
+  letter = as.character(penguins_letters[[1]]$Letters)
+)
+
+```
+
+## Graphiques
+
+Un tableau avec les groupes, leur lettre et leur 75ème centile est nécessaire pour la figure :
+
+```{r}
+penguins |> 
+  group_by(species) %>%
+  summarise(q_75 = quantile(flipper_length_mm, probs = 0.75, na.rm = TRUE)) |>
+  inner_join(penguins_letters_tb) -> penguins_letters_tbq
+```
+
+```{r}
+#| label: gganova
+#| eval: false
+# Graphique
+ggplot() + 
+  geom_boxplot(
+    data = penguins, 
+    aes(x = species, y = flipper_length_mm, fill = species), 
+    show.legend = FALSE
+  ) +
+  geom_text(
+    data = penguins_letters_tbq, 
+    aes(x = species, y = q_75, label = letter), 
+    size = 5, vjust=-1, hjust =-1
+  ) +
+  scale_fill_brewer(palette = "Blues")
+```
+
+
+## Graphiques
+
+```{r}
+#| ref.label: gganova
+#| echo: false
+```
+
+
+# Anova à 2 facteurs
+
+
+
+
+
+
+
+
+
+<!-- Styles for HTML slides -->
+<style>
+  /* Allow long bibliography */
+  .forceBreak { -webkit-column-break-after: always; break-after: column; }
+  slides > slide { overflow: scroll; }
+  slides > slide:not(.nobackground):after { content: ''; }
+
+  /* First page logo size */
+  .gdbar img {
+    width: 200px !important;
+    height: 55px !important;
+    margin: 8px 8px;
+  }
+  .gdbar {
+    width: 250px !important;
+    height: 70px !important;
+  }
+  
+  /* No logo on slides */
+  slides > slide:not(.nobackground):before {
+    display:none
+  }
+</style>
