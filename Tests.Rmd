@@ -120,12 +120,175 @@ Les tests peuvent être paramétrique, c'est-à-dire s'appuyer sur des lois conn
 
 ## Paramétrique
 
+Contexte: $Y \sim \mathcal{N}(\mu, \sigma^2)$.
+```{r}
+n <- 1000 ; mu <- 1 ; sigma = 10
+Y <- rnorm(n, mean = mu, sd = sigma)
+```
+
+Hypothèse nulle : $\mu = 0$.
+
+Test de Student : `t.test(Y, mu = 0)`
+
+Modèle linéaire : `lm(Y ~ 1)`
+
+$\to$ Faire varier $n$ et $\sigma$.
+
+
+## Non paramétrique
+
+Contexte: $Y$ n'est pas forcément distribué normalement.
+
+Hypothèse nulle : $\mu = 0$.
+
+Test de Wilcoxon : `wilcox.test(Y, mu = 0)`
+
+
+# Contre une distribution
+
+## Test de Kolmogorov-Smirnov
+
+Teste l'hypothèse que deux échantillons sont issus de la même distribution normale
+
+```{r}
+Y_double <- rnorm(2 * n, mean = mu, sd = sigma)
+Y_1 <- Y_double[1:n] ; Y_2 <- Y_double[(n + 1):(2 * n)]
+ks.test(Y_1, Y_2)
+```
+$\to$ Interpréter `ks.test(Y_1, Y_2 + 2)` (faire un graphique)
+
+
+## Paramétrique, variances égales
+
+Contexte:
+
+- $Y \sim \mathcal{N}(\mu, \sigma^2)$
+- $Y_0 \sim \mathcal{N}(\mu_0, \sigma^2)$
+```{r}
+mu_0 <- 2 ;
+Y_0 <- rnorm(n, mean = mu_0, sd = sigma)
+```
+Hypothèse nulle : $\mu = \mu_0$.
+
+Test de Student : `t.test(Y, Y_0, var.equal = TRUE)`
+
+Modèle linéaire : Anova à un facteur.
+
+
+## Paramétrique, variances différentes
+
+Contexte:
+
+- $Y \sim \mathcal{N}(\mu, \sigma^2)$
+- $Y_0 \sim \mathcal{N}(\mu_0, \sigma_0^2)$
+```{r}
+sigma_0 <- 20 ;
+Y_0 <- rnorm(n, mean = mu_0, sd = sigma_0)
+```
+Hypothèse nulle : $\mu = \mu_0$.
+
+Test de Welch : `t.test(Y, Y_0)`
+
+Modèle linéaire : Anova de Welch.
+
+
+## Non paramétrique
+
+Contexte: $Y$ ou $Y_0$ ne sont pas distribuées normalement.
+
+Hypothèse nulle : $\mu = \mu_0$.
+
+Test U de Mann-Whitney : `wilcox.test(Y, Y_0)`
+
+Modèle linéaire : Anova à un facteur sur les rangs signés.
+
+
+# Contre une distribution appariée
+
+## Paramétrique
+
+Contexte: $Y$ et $Y_0$ sont deux observations du même phénomène.
+
+- $Y \sim \mathcal{N}(\mu, \sigma^2)$
+- $Y_0 \sim \mathcal{N}(\mu_0, \sigma^2)$
+
+
+```{r}
+Y_0 <- Y + rnorm(n, mean = mu_0 - mu)
+```
+Hypothèse nulle : $\mu = \mu_0$.
+
+Test de Student : `t.test(Y, Y_0, paired = TRUE)`
+
+Modèle linéaire : `lm(Y - Y_0 ~ 1)`
+
+
+## Non paramétrique
+
+Contexte: 
+
+- $Y$ et $Y_0$ sont deux observations du même phénomène.
+- $Y$ ou $Y_0$ ne sont pas distribuées normalement.
+
+Hypothèse nulle : $\mu = \mu_0$.
+
+Test de Wilcoxon apparié : `wilcox.test(Y, Y_0, paired = TRUE)`
+
+
+# Corrélation
+
+## Corrélation de Pearson
+
+Contexte: 
+
+- $Y$ et $X$ sont liées linéairement
+- $Y-Y^\star \sim \mathcal{N}(0, \sigma^2)$
+
+Hypothèse nulle : $\mathrm{Cor}(X, Y) = 0$.
+
+Test de corrélation : `cor.test(X, Y, method = "Pearson")`
+
+Modèle linéaire : `lm(Y ~ 1 + X)`
+
+
+## Corrélation de Spearman
+
+Contexte: 
+
+- $Y$ et $X$ sont liées non linéairement, mais la relation est monotone.
+
+Hypothèse nulle : $\mathrm{Cor}(X, Y) = 0$.
+
+Test de corrélation : `cor.test(X, Y, method = "Spearman")`
+
+Modèle linéaire : `lm(Y ~ 1 + X)`
+
+
+## Exemple
+
+Simulation de tirages corrélés
+
+```{r}
+library(MASS)
+# Matrice de covariance
+Sigma <- matrix(c(1, 0.8, 0.8, 1), nrow = 2)
+# Simulation de X et Y
+XY <- mvrnorm(n, mu = c(mu, mu_0), Sigma = Sigma)
+```
+
+Test:
+```{r}
+cor.test(XY[, 1], XY[, 2])
+```
+
+
+
 
 # Conclusion
 
 ## Synthèse
 
-Tous ces tests s'appuient sur le modèle linéaire, y compris les tests non paramétriques.
+Tous ces tests s'appuient sur le modèle linéaire, y compris les tests non paramétriques qui utilisent le modèle linéaire sur les rangs (éventuellement signés) des variables.
 
 [Référence](https://lindeloev.github.io/tests-as-linear/linear_tests_cheat_sheet.pdf).
 
