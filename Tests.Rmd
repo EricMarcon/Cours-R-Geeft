@@ -64,7 +64,7 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 # Add necessary packages here
 Packages <- c(
   "tidyverse",
-  "scatterplot3d"
+  "MASS"
 )
 # Install them
 InstallPackages(Packages)
@@ -269,11 +269,11 @@ Modèle linéaire : `lm(Y ~ 1 + X)`
 Simulation de tirages corrélés
 
 ```{r}
-library(MASS)
+# library(MASS) : non chargée à cause de MASS::select()
 # Matrice de covariance
 Sigma <- matrix(c(1, 0.8, 0.8, 1), nrow = 2)
 # Simulation de X et Y
-XY <- mvrnorm(n, mu = c(mu, mu_0), Sigma = Sigma)
+XY <- MASS::mvrnorm(n, mu = c(mu, mu_0), Sigma = Sigma)
 ```
 
 Test:

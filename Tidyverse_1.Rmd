@@ -62,7 +62,7 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 #| include: false
 ### Customized options for this document
 # Add necessary packages here
-Packages <- c("tidyverse", "entropart")
+Packages <- c("tidyverse")
 # Install them
 InstallPackages(Packages)
 
@@ -355,7 +355,7 @@ Ne retenir que les colonnes intéressantes
 
 ```{r}
 paracou6 |> 
-  dplyr::select(SubPlot:Yfield, Family:Species, CircCorr) |> 
+  select(SubPlot:Yfield, Family:Species, CircCorr) |> 
   ncol()
 ```
 
@@ -368,7 +368,7 @@ Des colonnes sont ajoutées au tibble
 
 ```{r}
 paracou6 |> 
-  dplyr::select(idTree, CircCorr) |> 
+  select(idTree, CircCorr) |> 
   mutate(Diametre = CircCorr/pi) |> 
   print() -> 
   paracou6_diam

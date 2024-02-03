@@ -62,7 +62,7 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 #| include: false
 ### Customized options for this document
 # Add necessary packages here
-Packages <- c("tidyverse", "entropart")
+Packages <- c("tidyverse")
 # Install them
 InstallPackages(Packages)
 
@@ -131,7 +131,7 @@ Installation depuis un dépôt officiel avec contrôle de qualité : CRAN.
 
 Menu Tools / Install Packages...
 
-Les packages sont installés dans `%localappdata%/R/win-library/4.2/` pour R version $\geq$ 4.2.
+Les packages sont installés dans `%localappdata%/R/win-library/4.3/` pour R version $\geq$ 4.3.
 
 
 ## RStudio
