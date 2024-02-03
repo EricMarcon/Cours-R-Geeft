@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mise à niveau R 3/3</title>
+  <title>Conclusion</title>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -20,7 +20,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: 'Mise à niveau R 3/3',
+                title: 'Conclusion',
                         useBuilds: true,
         usePrettify: true,
         enableSlideAreas: true,
@@ -3113,69 +3113,6 @@ span.underline{text-decoration: underline;}
 div.column{display: inline-block; vertical-align: top; width: 50%;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-{ counter-reset: source-line 0; }
-pre.numberSource code > span
-{ position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-{ content: counter(source-line);
-position: relative; left: -1em; text-align: right; vertical-align: baseline;
-border: none; display: inline-block;
--webkit-touch-callout: none; -webkit-user-select: none;
--khtml-user-select: none; -moz-user-select: none;
--ms-user-select: none; user-select: none;
-padding: 0 4px; width: 4em;
-color: #aaaaaa;
-}
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
-div.sourceCode
-{ }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } 
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.at { color: #7d9029; } 
-code span.bn { color: #40a070; } 
-code span.bu { color: #008000; } 
-code span.cf { color: #007020; font-weight: bold; } 
-code span.ch { color: #4070a0; } 
-code span.cn { color: #880000; } 
-code span.co { color: #60a0b0; font-style: italic; } 
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.do { color: #ba2121; font-style: italic; } 
-code span.dt { color: #902000; } 
-code span.dv { color: #40a070; } 
-code span.er { color: #ff0000; font-weight: bold; } 
-code span.ex { } 
-code span.fl { color: #40a070; } 
-code span.fu { color: #06287e; } 
-code span.im { color: #008000; font-weight: bold; } 
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.kw { color: #007020; font-weight: bold; } 
-code span.op { color: #666666; } 
-code span.ot { color: #007020; } 
-code span.pp { color: #bc7a00; } 
-code span.sc { color: #4070a0; } 
-code span.ss { color: #bb6688; } 
-code span.st { color: #4070a0; } 
-code span.va { color: #19177c; } 
-code span.vs { color: #4070a0; } 
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 slides > slide:not(.nobackground):before {
 font-size: 12pt;
 content: "";
@@ -3211,346 +3148,144 @@ line-height: 1.9;
           </hgroup>
   </slide>
 
-<slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Vectoriser</h2></hgroup><article  id="vectoriser">
+<slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Synthèse</h2></hgroup><article  id="synthèse">
 
-</article></slide><slide class=""><hgroup><h2>Fonctions vectorielles</h2></hgroup><article  id="fonctions-vectorielles">
+</article></slide><slide class=""><hgroup><h2>Apprentissage de R</h2></hgroup><article  id="apprentissage-de-r">
 
-<p>La plupart des fonctions de R sont vectorielles :</p>
+<p>R est un langage très versatile : il existe toujours de nombreuses façons de faire la même chose.</p>
 
-<p></p>
+<p>\(\to\) Trouver son environnement, son style de codage, ses packages récurrents.</p>
 
-<pre class = 'prettyprint lang-r'>x1 &lt;- runif(3)
-x2 &lt;- runif(3)
-sqrt(x1)</pre>
-
-<pre >## [1] 0.2196613 0.4676215 0.7086498</pre>
-
-<pre class = 'prettyprint lang-r'>x1 + x2</pre>
-
-<pre >## [1] 0.4535659 0.6173199 1.4497125</pre>
-
-<p></p>
-
-<p>Raisonner en termes de vecteurs plutôt que de scalaires.</p>
-
-</article></slide><slide class=""><hgroup><h2>Fonctions vectorielles</h2></hgroup><article  id="fonctions-vectorielles-1">
-
-<p>Ecrire des fonctions vectorielles sur leur premier argument :</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>entropart::lnq</pre>
-
-<pre >## function (x, q) 
-## {
-##     if (q == 1) {
-##         return(log(x))
-##     }
-##     else {
-##         Log &lt;- (x^(1 - q) - 1)/(1 - q)
-##         Log[x &lt; 0] &lt;- NA
-##         return(Log)
-##     }
-## }
-## &lt;bytecode: 0x7f8893c56660&gt;
-## &lt;environment: namespace:entropart&gt;</pre>
-
-<p></p>
-
-</article></slide><slide class=""><hgroup><h2>Fonctions de résumé</h2></hgroup><article  id="fonctions-de-résumé">
-
-<p>Exceptions à la règle : fonctions d’un vecteur, résultat scalaire.</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>sum(x1)</pre>
-
-<pre >## [1] 0.7691056</pre>
-
-<p></p>
-
-</article></slide><slide class=""><hgroup><h2>Fonctions non vectorielles</h2></hgroup><article  id="fonctions-non-vectorielles">
-
-<p><code>sapply()</code> applique une fonction à chaque élément d’un vecteur ou d’une liste.</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>x1 &lt;- runif(1000)
-identical(
-  sqrt(x1), 
-  sapply(x1, FUN = sqrt)
-)</pre>
-
-<pre >## [1] TRUE</pre>
-
-<p> On utilise donc <code>sapply()</code> quand on ne dispose pas d’une fonction vectorielle.</p>
-
-<p>On n’utilise donc jamais <code>sapply()</code> avec <code>FUN = sqrt</code>.</p>
-
-</article></slide><slide class=""><hgroup><h2>Fonctions non vectorielles</h2></hgroup><article  id="fonctions-non-vectorielles-1">
-
-<p>Fonctions similaires :</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>library(&quot;microbenchmark&quot;)
-mb &lt;- microbenchmark(sqrt(x1), sapply(x1, FUN = sqrt),
-    lapply(x1, sqrt), vapply(x1, sqrt, FUN.VALUE = 0))
-summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
-
-<pre >##                              expr   median
-## 1                        sqrt(x1)   5.1075
-## 2          sapply(x1, FUN = sqrt) 366.5230
-## 3                lapply(x1, sqrt) 292.0800
-## 4 vapply(x1, sqrt, FUN.VALUE = 0) 287.5180</pre>
-
-<p></p>
-
-<p>Infiniment plus lent qu’une fonction vectorielle.</p>
+<p>Nous avons vu :</p>
 
 <ul>
-<li><code>lapply()</code> renvoie une liste (économise le temps de <code>simplify2array()</code>) - <code>vapply()</code> économise le temps de détermination du type du vecteur.</li>
+<li>la syntaxe de base ;</li>
+<li>le tidyverse ;</li>
+<li>la visualisation des données ;</li>
+<li>l’utilisation des packages.</li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Boucles</h2></hgroup><article  id="boucles">
+</article></slide><slide class=""><hgroup><h2>Apprentissage de R</h2></hgroup><article  id="apprentissage-de-r-1">
 
-<p>Les boucles sont plus rapides !</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>boucle &lt;- function(x) {
-  racine &lt;- numeric(length(x))
-  for(i in 1:length(x)) racine[i] &lt;- sqrt(x[i])
-  return(racine)
-}
-vapply_sqrt &lt;- function(x) vapply(x, FUN = sqrt, 0)
-mb &lt;- microbenchmark(vapply_sqrt(x1), boucle(x1))
-summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
-
-<pre >##              expr   median
-## 1 vapply_sqrt(x1) 307.6265
-## 2      boucle(x1) 866.8785</pre>
-
-<p></p>
-
-</article></slide><slide class=""><hgroup><h2>Boucles</h2></hgroup><article  id="boucles-1">
-
-<p>Les boucles longues permettent un suivi :</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>boucle &lt;- function(x) {
-  pgb &lt;- txtProgressBar(min = 0, max = length(x))
-  racine &lt;- numeric(length(x))
-  for(i in 1:length(x)) {
-    racine[i] &lt;- sqrt(x[i])
-    setTxtProgressBar(pgb, i)
-  }
-  return(racine)
-}
-racine_x1 &lt;- boucle(x1)</pre>
-
-<pre >## ==================================================</pre>
-
-<p> Mais le package <a href='https://peter.solymos.org/pbapply/' title=''><em>pbapply</em></a> aussi.</p>
-
-</article></slide><slide class=""><hgroup><h2>replicate et vectorize</h2></hgroup><article  id="replicate-et-vectorize">
-
-<p><code>replicate()</code> répète une instruction.</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>replicate(3, runif(1))</pre>
-
-<pre >## [1] 0.1798271 0.4394653 0.7850207</pre>
-
-<p></p>
-
-<p>est équivalent à <code>runif(3)</code>. A utiliser avec des fonctions non vectorielles.</p>
-
-<p><code>vectorize()</code> rend vectorielle une fonction qui ne l’est pas par des boucles. Ecrire plutôt les boucles.</p>
-
-</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Pratique</h2></hgroup><article  id="pratique">
-
-</article></slide><slide class=""><hgroup><h2>Vectoriser un problème</h2></hgroup><article  id="vectoriser-un-problème">
-
-<p>Données : inventaire d’une parcelle de Paracou, 4 carrés distincts.</p>
-
-<p>Objectif : calculer le nombre d’arbres par espèce, le nombre d’arbres par carré, la biodiversité par carré.</p>
-
-<p>Technique : utiliser les fonctions vectorielles, les fonctions de type <code>apply</code>, éventuellement des boucles.</p>
-
-</article></slide><slide class=""><hgroup><h2>Lecture et organisation des données</h2></hgroup><article  id="lecture-et-organisation-des-données">
-
-<p>Lecture des arbres de la parcelle 6 de Paracou</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'># Lecture des arbres de la parcelle 6 de Paracou
-paracou6 &lt;- read.csv2(&quot;data/Paracou6.csv&quot;)</pre>
-
-<p></p>
-
-<p>Création d’un tableau croisé :</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>paracou6_x &lt;- as.data.frame.matrix(xtabs(
-  ~paste(Family, Genus, Species) + SubPlot, data = paracou6
-))
-paracou6_x[1:2, ]</pre>
-
-<pre >##                                     1 2 3 4
-## Anacardiaceae Anacardium spruceanum 0 1 0 2
-## Anacardiaceae Tapirira guianensis   1 2 0 0</pre>
-
-<p></p>
-
-<p><code>as.data.frame.matrix</code> est la méthode de conversion des matrices en dataframes…</p>
-
-</article></slide><slide class=""><hgroup><h2>Tableau croisé dans le tidyverse</h2></hgroup><article  id="tableau-croisé-dans-le-tidyverse">
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>library(&quot;tidyverse&quot;)
-read.csv2(&quot;data/Paracou6.csv&quot;) |&gt; 
-  # Nouvelle colonne
-  unite(col = spName, Family, Genus, Species, sep = &quot; &quot;) |&gt; 
-  # Regrouper et résumer
-  group_by(spName, SubPlot) |&gt; 
-  summarise(abundance = n()) |&gt; 
-  # Voir l&#39;aide de la fonction pivot_wider
-  pivot_wider(names_from = SubPlot, values_from = abundance, 
-              names_sort = TRUE, values_fill = 0) -&gt;
-  paracou6_pw</pre>
-
-<p></p>
-
-<p>Syntaxe plus verbeuse mais n’importe quelle statistique est possible, pas seulement le comptage.</p>
-
-</article></slide><slide class=""><hgroup><h2>Statistiques marginales</h2></hgroup><article  id="statistiques-marginales">
-
-<p><code>apply()</code> applique une fonction aux lignes ou colonnes d’un objet 2D.</p>
-
-<p><code>colSums()</code> et semblables (<code>colMeans()</code>, <code>rowMeans()</code>) sont optimisées.</p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>paracou6_x &lt;- as.matrix(paracou6_pw[, -1])
-mb &lt;- microbenchmark(
-  apply(paracou6_x, MARGIN = 2, FUN = sum), 
-  colSums(paracou6_x)
-)
-summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
-
-<pre >##                                       expr median
-## 1 apply(paracou6_x, MARGIN = 2, FUN = sum) 51.601
-## 2                      colSums(paracou6_x)  7.662</pre>
-
-<pre class = 'prettyprint lang-r'>colSums(paracou6_x)</pre>
-
-<pre >##   1   2   3   4 
-## 942 872 929 798</pre>
-
-<p></p>
-
-</article></slide><slide class=""><hgroup><h2>Comptage du nombre d’espèces</h2></hgroup><article  id="comptage-du-nombre-despèces">
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>mb &lt;- microbenchmark(
-  apply(paracou6_x, 2, function(x) sum(x &gt; 0)), 
-  colSums(paracou6_x &gt; 0)
-)
-summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
-
-<pre >##                                           expr
-## 1 apply(paracou6_x, 2, function(x) sum(x &gt; 0))
-## 2                      colSums(paracou6_x &gt; 0)
-##    median
-## 1 60.2285
-## 2 14.8755</pre>
-
-<pre class = 'prettyprint lang-r'>colSums(paracou6_x &gt; 0)</pre>
-
-<pre >##   1   2   3   4 
-## 189 200 197 177</pre>
-
-<p></p>
-
-<p>Remarquer :</p>
+<p>Nous n’avons pas vu :</p>
 
 <ul>
-<li>le comptage d’un résultat de test (<code>TRUE</code> vaut 1, <code>FALSE</code> vaut 0)</li>
-<li>la définition d’une fonction sans nom, appelée &ldquo;fonction lambda&rdquo;.</li>
-</ul>
-
-</article></slide><slide class=""><hgroup><h2>Fonctions complexes</h2></hgroup><article  id="fonctions-complexes">
-
-<p>Estimation de la richesse spécifique avec <em>entropart</em></p>
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>library(&quot;entropart&quot;)
-apply(paracou6_x, MARGIN = 2, FUN = Richness)</pre>
-
-<pre >##   1   2   3   4 
-## 355 348 315 296</pre>
-
-<p></p>
-
-</article></slide><slide class=""><hgroup><h2>Exercice</h2></hgroup><article  id="exercice">
-
-<p>Estimer par simulation l’espérance et la variance d’une loi binomiale.</p>
-
-<ol>
-<li>Effectuer 10 tirages dans une loi uniforme ;</li>
-<li>Compter le nombre de succès = résultats inférieurs à la probabilité <code>p</code> choisie ;</li>
-<li>Effectuer 5 fois 10 tirages ;</li>
-<li>Calculer la moyenne et l’espérance des 5 nombres de succès.</li>
-<li>Passer à l’échelle : 10000 tirages, 1000 répétitions.</li>
-</ol>
-
-</article></slide><slide class=""><hgroup><h2>Aide pour l’exercice</h2></hgroup><article  id="aide-pour-lexercice">
-
-<ol>
-<li><code>runif()</code>, paramètre <code>tirages_n</code></li>
-<li>Somme des valeurs vraies</li>
-<li><code>replicate</code> fournit une matrice ; paramètre <code>repetitions_n</code>.</li>
-<li><code>colSums</code></li>
-<li>Changer les paramètres.</li>
-</ol>
-
-</article></slide><slide class=""><hgroup><h2>Solution de l’exercice</h2></hgroup><article  id="solution-de-lexercice">
-
-<p></p>
-
-<pre class = 'prettyprint lang-r'>p &lt;- 0.5
-tirages_n &lt;- 10000
-repetitions_n &lt;- 1000
-succes_n &lt;- colSums(replicate(repetitions_n, runif(tirages_n)) &lt; p)
-mean(succes_n)</pre>
-
-<pre >## [1] 4998.137</pre>
-
-<pre class = 'prettyprint lang-r'>sd(succes_n)</pre>
-
-<pre >## [1] 51.0919</pre>
-
-<p></p>
-
-</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Conclusion</h2></hgroup><article  id="conclusion">
-
-</article></slide><slide class=""><hgroup><h2>Vecteurs ou tidy</h2></hgroup><article  id="vecteurs-ou-tidy">
-
-<p>Deux approches différentes :</p>
+<li>Les différents <a href='https://ericmarcon.github.io/travailleR/chap-utiliseR.html#les-langages-de-r' title=''>langages de R</a> :
 
 <ul>
-<li>R classique : sélection par <code>[ ]</code>, fonctions <em>x</em><code>apply()</code> ;</li>
-<li>Tidyverse : pipelines, données rectangulaires.</li>
+<li>Nous avons utilisé S3, il en existe d’autres.</li>
+</ul></li>
+<li>L’organisation interne de R, les <a href='https://ericmarcon.github.io/travailleR/chap-utiliseR.html#sec:environnements' title=''>environnements</a> pour comprendre les conflits de noms et la portée des variables.</li>
+<li>Les usages avancés de R :
+
+<ul>
+<li>la <a href='https://ericmarcon.github.io/travailleR/chap-utiliseR.html#sec:parallel' title=''>parallélisation</a> pour accélérer l’exécution ;</li>
+<li><a href='https://ericmarcon.github.io/travailleR/chap-utiliseR.html#sec:cpp' title=''>l’intégration de code C++</a> pour encore plus de vitesse ;</li>
+<li>la <a href='https://ericmarcon.github.io/travailleR/chap-package.html' title=''>création de packages</a> ;</li>
+<li>la gestion du <a href='https://ericmarcon.github.io/travailleR/chap-utiliseR.html#sec:targets' title=''>flux de travail</a> pour mettre en cache des résultats de longs calculs.</li>
+</ul></li>
 </ul>
 
-<p>Le tidyverse est très efficace pour la bagarre avec les données, les <em>x</em><code>apply()</code> pour appliquer les mêmes fonctions à plusieurs vecteurs de données.</p>
+</article></slide><slide class=""><hgroup><h2>Apprentissage de R</h2></hgroup><article  id="apprentissage-de-r-2">
+
+<p>R (avec RStudio) est un environnement de travail en plus d’un logiciel de statistiques.</p>
+
+<p>Nous avons vu :</p>
+
+<ul>
+<li>Comment rédiger des documents très simples (bloc-note) ou très élaborés (livre), reproductibles, indépendamment de leur format final (HTML, PDF, Word…)</li>
+<li>Comment utiliser git pour le contrôle de source et GitHub pour le partage, l’intégration continue et la publication.</li>
+</ul>
+
+<p>Nous n’avons pas vu :</p>
+
+<ul>
+<li>D’autres types de production : <a href='https://ericmarcon.github.io/' title=''>site web</a>, <a href='https://ericmarcon.github.io/CV/' title=''>CV</a>, <a href='https://rmarkdown.rstudio.com/gallery.html' title=''>etc</a> ;</li>
+<li>Les applications R interactives avec <a href='https://ericmarcon.github.io/travailleR/chap-shiny.html' title=''>Shiny</a> ;</li>
+<li>Les <a href='https://ericmarcon.github.io/travailleR/chap-enseigner.html' title=''>outils d’enseignement</a>.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Statistiques</h2></hgroup><article  id="statistiques">
+
+<p>Le contenu du cours est assez proche de <a href='https://pmarchand1.github.io/ECL7102/' title=''>celui de Philippe Marchand</a> (Université du Québec en Abitibi-Témiscamingue) dont le dépôt GitHub peut servir de support rédigé.</p>
+
+<p>Nous avons revu les fondamentaux de la statistique :</p>
+
+<ul>
+<li>Les lois de probabilité fondamentales qui permettent de faire des statistiques ;</li>
+<li>La loi des grands nombres qui permet de relier un échantillon à sa loi ;</li>
+<li>Le théorème de la limite centrale qui permet d’appliquer la loi normale à tout ce qui ne l’est pas.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Statistiques</h2></hgroup><article  id="statistiques-1">
+
+<p>Nous avons étudié le modèle numérique en détail :</p>
+
+<ul>
+<li>La régression linéaire ;</li>
+<li>L’Anova à un facteur ;</li>
+<li>Les tests classiques, dans le cadre du modèle numérique.</li>
+</ul>
+
+<p>Nous avons vu rapidement les analyses multivariées ou méthodes d’ordination :</p>
+
+<ul>
+<li>L’ACP (la PCoA et l’ACM) et l’AFC ;</li>
+<li>Les analyses directes : RDA et CCA.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Statistiques</h2></hgroup><article  id="statistiques-2">
+
+<p>Nous n’avons pas vu :</p>
+
+<ul>
+<li>l’Anova à plusieurs facteurs :
+
+<ul>
+<li>triviale si les facteurs sont indépendants (équivalent à une Anova à un facteur sur les combinaisons)</li>
+<li>complexe si on traite les interactions, même à deux facteurs.</li>
+</ul></li>
+<li>le modèle linéaire généralisé :
+
+<ul>
+<li>quand \(Y\) ne vaut pas \(\beta_0\) en moyenne et qu’une fonction de lien est nécessaire (quand \(Y\) est <a href='https://pmarchand1.github.io/ECL7102/notes_cours/10-Regression_Poisson.html' title=''>entier</a> ou <a href='https://pmarchand1.github.io/ECL7102/notes_cours/9-Regression_logistique.html' title=''>compris entre 0 et 1</a> par exemple).</li>
+</ul></li>
+<li>le modèle linéaire mixte :
+
+<ul>
+<li>quand les observations ne sont pas indépendantes ;</li>
+<li>quand un groupe de données a un effet aléatoire.</li>
+</ul></li>
+<li>les modèles non linéaires et imbriqués.</li>
+</ul>
+
+<p>Nous avons utilisé l’inférence fréquentiste (par maximum de vraisemblance) mais pas l’inférence bayésienne de ces modèles.</p>
+
+</article></slide><slide class=""><hgroup><h2>Conclusion</h2></hgroup><article  id="conclusion">
+
+<p>Philosophie générale du cours :</p>
+
+<ul>
+<li>penser modèle plutôt qu’outil statistique ;</li>
+<li>simuler des données correspondant au modèle pour le tester avant de l’appliquer aux données réelles ;</li>
+<li>travailler de façon reproductible :
+
+<ul>
+<li>des scripts, pas de presse-bouton ;</li>
+<li>le contrôle de source et l’intégration continue.</li>
+</ul></li>
+<li>respecter les bonnes pratiques :
+
+<ul>
+<li>code propre, noms de variables clairs ;</li>
+<li>des paramètres plutôt que des constantes.</li>
+</ul></li>
+<li>documenter abondamment, réutiliser ses codes :
+
+<ul>
+<li>le bon code nécessite du temps mais sert longtemps.</li>
+</ul></li>
+</ul>
 
 <!-- Styles for HTML slides -->
 

@@ -131,3 +131,8 @@ Supports :
 ## Méthodes d'ordination
 
 A venir.
+
+
+## Aller plus loin
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Conclusion.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Conclusion.pdf)
