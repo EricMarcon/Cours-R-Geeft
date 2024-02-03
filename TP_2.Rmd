@@ -304,12 +304,29 @@ abline(v = 50, lty = 2)
 Distribution de la moyenne de nombreuses variables aléatoires.
 
 ```{r}
-#| out.width: 70%
+#| out.width: 60%
 # 10000 tirages, espérance = 500 * 0.1 
 plot(density(rnorm(tirages_n, mean = 50, sd = sqrt(50))))
 abline(v = 50, lty = 2)
 ```
 A comparer avec la loi de Poisson
+
+
+## Loi log-normale
+
+Loi dont le logarithme est normal.
+
+Distribution du produit de nombreuses variables aléatoires.
+
+```{r}
+#| out.width: 60%
+plot(
+  density.reflected(rlnorm(tirages_n, meanlog = 0, sdlog = 1), lower = 0), 
+  log ="x"
+)
+abline(v = exp(1/2), lty = 2)  # Espérance
+abline(v = exp(-1), lty = 3)   # Mode 
+```
 
 
 ## Théorème de la limite centrale{.columns-2}
