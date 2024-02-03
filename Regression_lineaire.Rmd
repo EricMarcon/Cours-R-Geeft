@@ -64,7 +64,9 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 # Add necessary packages here
 Packages <- c(
   "tidyverse",
-  "scatterplot3d"
+  "scatterplot3d",
+  "AICcmodavg",
+  "MASS"
 )
 # Install them
 InstallPackages(Packages)
@@ -629,7 +631,8 @@ En pratique, les covariables doivent être aussi peu corrélées que possible.
 On peut tester l'effet de l'interaction de deux variables :
 
 ```{r}
-lm(y ~ x_1 + x_2 + x_1*x_2, data = mod_l2) |> summary()
+lm(y ~ x_1 + x_2 + x_1:x_2, data = mod_l2) |> # Identique à x_1*x_2
+  summary()
 ```
 
 
@@ -689,6 +692,56 @@ with(mod_l1, cor.test(x, y, method = "spearman"))
 Les modèles sont équivalents et donnent la même p-value.
 
 
+# Transformation de variables
+
+## Principe
+
+Le modèle linéaire permet de traiter des modèles non linéaires en transformant les variables.
+
+Exemple : le volume $V$ d'un arbre est lié à son diamètre $D$ à la puissance $\beta_1$
+
+$\to$ Modèle : $$\ln(V) = \beta_0 + \beta_1 \ln(D) + \Epsilon$$
+
+
+## Pratique
+
+Dans la formule de `lm()`, certains opérateurs sont compris, d'autres non : essayer.
+
+```{r}
+# Données
+n <- 100
+D <- runif(n, min = 10, max = 50)
+V <- exp(2.5 * log(D)) + rnorm(n)
+# Modèle
+lm(log(V) ~ log(D))
+```
+
+## Pratique
+
+Autres écritures :
+
+- `I(D^2.5)` : le contenu de `I()` peut être n'importe quel calcul valide
+```{r}
+#| eval: false
+lm(V ~ I(D^2.5))
+```
+- `poly(D, degree = 3)` : toutes les puissances de D jusqu'à 3.
+```{r}
+#| eval: false
+lm(V ~ poly(D, degree = 3))
+```
+
+## Pourquoi transformer
+
+Modèle mécaniste : la relation entre volume et diamètre est à la puissance 3 si l'arbre est un cylindre.
+
+Contrôle de la variance : dans certains cas, la variance augmente avec $Y^\star$.
+On peut essayer de régresser $\sqrt(Y)$  ou $\ln(Y)$.
+
+Mais on ne doit pas tenter à l'aveugle toutes les transformations possibles : voir le problème des tests multiples dans le cours sur l'Anova. 
+
+
+
 # Ancova
 
 ## Théorie
@@ -743,9 +796,97 @@ ventoux |>
 
 
 
+# Sélection de modèle
+
+## Théorie
+
+Un modèle avec trop peu de covariables est sous-ajusté.
+Il explique mal $Y$, avec une erreur qui ne diminue pas quand le nombre d'observations augmente : on parle de *biais*.
+Cas extrême : $Y = \beta_0 + \Epsilon$
+
+Un modèle avec trop de covariables est sur-ajusté.
+Avec le même nombre d'observations qu'un modèle plus simple, ses coefficients sont une *variance* plus grande.
+Cas extrême : $Y = \beta_0 +  \sum_{i=1}^{n-1}{\beta_i X_i} + \Epsilon$
 
 
+## Théorie
 
+Beaucoup de méthodes pour choisir le "meilleur" modèle, solide support théorique.
+
+Critère AIC : $-2 \ln(L) + 2K$ où $L$ est la vraisemblance et $K$ le nombre de paramètres (les $\beta_i$ et $\sigma$).
+
+Critère AICc pour de petits échantillons : 
+$$-2 \ln(L) + 2K \frac{n}{n -K -1}$$
+
+## Exemple
+
+Faut-il ajouter le paramètre espèce au modèle Ventoux ?
+
+On peut calculer l'AICc d'un modèle
+
+```{r}
+library("AICcmodavg")
+lm(hauteur ~ diametre, data = ventoux) |> 
+  AICc()
+```
+Pour la comparaison, une liste de modèles est nécessaire :
+
+```{r}
+ventoux_lm_list <- list(
+  nul = lm(hauteur ~ 1, data = ventoux),
+  diametre = lm(hauteur ~ diametre, data = ventoux),
+  diamespece = lm(hauteur ~ diametre + espece, data = ventoux),
+  complet = lm(hauteur ~ diametre*espece, data = ventoux)
+)
+```
+
+## Exemple
+
+```{r}
+aictab(ventoux_lm_list)
+```
+
+Le meilleur modèle est celui avec l'espèce mais sans l'interaction.
+
+Les poids permettent des prédictions multi-modèles.
+
+## Exemple
+
+Prédiction pour de nouvelles valeurs:
+
+```{r}
+ventoux_nouveau <- data.frame(
+  diametre = c(20, 50),
+  espece = c("Pin", "Cèdre")
+)
+modavgPred(ventoux_lm_list, newdata = ventoux_nouveau)
+```
+
+## Sélection systématique
+
+Sélection (*forward*) :
+
+- Estimer le modèle complet,
+- Retirer la covariable qui fait le plus diminuer l'AIC jusqu'à ce qu'il ne diminue plus
+
+Élimination (*backward*) :
+
+- Estimer le modèle null
+- Ajouter a covariable qui fait le plus diminuer l'AIC jusqu'à ce qu'il ne diminue plus
+
+Mixte (*stepwise*): 
+
+- Sélection puis élimination successives.
+
+
+## Exemple
+
+Critère AIC, pas AICc :
+
+```{r}
+library("MASS")
+stepAIC(lm(hauteur ~ diametre * espece, data = ventoux))
+```
 
 
 <!-- Styles for HTML slides -->
