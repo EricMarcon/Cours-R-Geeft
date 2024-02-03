@@ -355,7 +355,7 @@ Ne retenir que les colonnes intéressantes
 
 ```{r}
 paracou6 |> 
-  select(SubPlot:Yfield, Family:Species, CircCorr) |> 
+  dplyr::select(SubPlot:Yfield, Family:Species, CircCorr) |> 
   ncol()
 ```
 
@@ -368,7 +368,7 @@ Des colonnes sont ajoutées au tibble
 
 ```{r}
 paracou6 |> 
-  select(idTree, CircCorr) |> 
+  dplyr::select(idTree, CircCorr) |> 
   mutate(Diametre = CircCorr/pi) |> 
   print() -> 
   paracou6_diam
