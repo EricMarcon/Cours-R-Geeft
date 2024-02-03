@@ -358,15 +358,6 @@ ggplot() +
 ```
 
 
-# Anova à 2 facteurs
-
-
-
-
-
-
-
-
 
 <!-- Styles for HTML slides -->
 <style>
