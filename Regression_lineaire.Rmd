@@ -282,6 +282,7 @@ mod_l1_lm |> residuals() |> shapiro.test()
 La p-value est la probabilité de se tromper en rejetant l'hypothèse nulle de normalité des données.
 Attention : la puissance du test augmente avec la taille de l'échantillon (limité à 5000).
 
+
 ## Test de Kolmogorov-Smirnov
 
 Teste l'hypothèse que deux échantillons sont issus de la même distribution :
