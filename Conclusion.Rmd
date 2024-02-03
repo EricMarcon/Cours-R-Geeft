@@ -1,0 +1,231 @@
+---
+title: "Conclusion"
+author: "Eric Marcon"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+url: https://EricMarcon.github.io/Cours-R-Geeft/
+github-repo: EricMarcon/Cours-R-Geeft
+bibliography: references.bib
+biblio-style: chicago
+urlcolor: blue
+output:
+  bookdown::beamer_presentation2:
+    latex_engine: xelatex
+    includes:
+      in_header: latex/header.tex
+    citation_package: natbib
+    slide_level: 2
+    df_print: default
+    number_sections: no
+    toc: no
+    fig_caption: no
+    keep_tex: no
+  bookdown::ioslides_presentation2:
+    logo: images/logo.png
+    widescreen: true
+---
+
+```{r}
+#| label: DoNotModify
+#| include: false
+### Utilities. Do not modify.
+# Installation of packages if necessary
+InstallPackages <- function(Packages) {
+  InstallPackage <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {
+      install.packages(Package, repos = "https://cran.rstudio.com/")
+    }
+  }
+  invisible(sapply(Packages, InstallPackage))
+}
+
+# Basic packages
+InstallPackages(c("bookdown", "formatR", "kableExtra", "ragg"))
+
+# kableExtra must be loaded 
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "docx") {
+  # Word output (https://stackoverflow.com/questions/35144130/in-knitr-how-can-i-test-for-if-the-output-will-be-pdf-or-word)
+  # Do not use autoformat (https://github.com/haozhu233/kableExtra/issues/308)
+  options(kableExtra.auto_format = FALSE)
+}
+library("kableExtra")
+
+# Chunk font size hook: allows size='small' or any valid Latex font size in chunk options
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r}
+#| label: Options
+#| include: false
+### Customized options for this document
+# Add necessary packages here
+Packages <- c("tidyverse")
+# Install them
+InstallPackages(Packages)
+
+# knitr options
+knitr::opts_chunk$set(
+  cache =   TRUE,     # Cache chunk results
+  include = TRUE,     # Show/Hide chunks
+  echo =    TRUE,     # Show/Hide code
+  warning = FALSE,    # Show/Hide warnings
+  message = FALSE,    # Show/Hide messages
+  # Figure alignment and size
+  fig.align = 'center', out.width = '80%',
+  # Graphic devices (ragg_png is better than standard png)
+  dev = c("ragg_png", "pdf"),
+  # Code chunk format
+  tidy = FALSE, tidy.opts = list(blank = FALSE, width.cutoff = 50),
+  size = "scriptsize", knitr.graphics.auto_pdf = TRUE
+)
+options(width = 50)
+
+# ggplot style
+library("tidyverse")
+theme_set(theme_bw())
+theme_update(
+  panel.background = element_rect(fill = "transparent", colour = NA),
+  plot.background = element_rect(fill = "transparent", colour = NA)
+)
+knitr::opts_chunk$set(dev.args = list(bg = "transparent"))
+
+# Tibbles: 5 lines, fit to slide width
+options(tibble.print_min = 5, tibble.width = 50)
+
+# Random seed
+set.seed(973)
+```
+
+
+# Synthèse
+
+## Apprentissage de R
+
+R est un langage très versatile : il existe toujours de nombreuses façons de faire la même chose.
+
+$\to$ Trouver son environnement, son style de codage, ses packages récurrents.
+
+Nous avons vu :
+
+- la syntaxe de base ;
+- le tidyverse ;
+- la visualisation des données ;
+- l'utilisation des packages.
+
+## Apprentissage de R
+
+Nous n'avons pas vu :
+
+- Les différents [langages de R](https://ericmarcon.github.io/travailleR/chap-utiliseR.html#les-langages-de-r) :
+   - Nous avons utilisé S3, il en existe d'autres.
+- L'organisation interne de R, les [environnements](https://ericmarcon.github.io/travailleR/chap-utiliseR.html#sec:environnements) pour comprendre les conflits de noms et la portée des variables.
+- Les usages avancés de R :
+  - la [parallélisation](https://ericmarcon.github.io/travailleR/chap-utiliseR.html#sec:parallel) pour accélérer l'exécution ;
+  - [l'intégration de code C++](https://ericmarcon.github.io/travailleR/chap-utiliseR.html#sec:cpp) pour encore plus de vitesse ;
+  - la [création de packages](https://ericmarcon.github.io/travailleR/chap-package.html) ;
+  - la gestion du [flux de travail](https://ericmarcon.github.io/travailleR/chap-utiliseR.html#sec:targets) pour mettre en cache des résultats de longs calculs.
+
+
+## Apprentissage de R
+
+R (avec RStudio) est un environnement de travail en plus d'un logiciel de statistiques.
+
+Nous avons vu :
+
+- Comment rédiger des documents très simples (bloc-note) ou très élaborés (livre), reproductibles, indépendamment de leur format final (HTML, PDF, Word...)
+- Comment utiliser git pour le contrôle de source et GitHub pour le partage, l'intégration continue et la publication.
+
+Nous n'avons pas vu :
+
+- D'autres types de production : [site web](https://ericmarcon.github.io/), [CV](https://ericmarcon.github.io/CV/), [etc](https://rmarkdown.rstudio.com/gallery.html) ;
+- Les applications R interactives avec [Shiny](https://ericmarcon.github.io/travailleR/chap-shiny.html) ;
+- Les [outils d'enseignement](https://ericmarcon.github.io/travailleR/chap-enseigner.html).
+
+
+## Statistiques
+
+Le contenu du cours est assez proche de [celui de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) dont le dépôt GitHub peut servir de support rédigé.
+
+
+Nous avons revu les fondamentaux de la statistique :
+
+- Les lois de probabilité fondamentales qui permettent de faire des statistiques ;
+- La loi des grands nombres qui permet de relier un échantillon à sa loi ;
+- Le théorème de la limite centrale qui permet d'appliquer la loi normale à tout ce qui ne l'est pas.
+
+
+## Statistiques
+
+Nous avons étudié le modèle numérique en détail :
+
+- La régression linéaire ;
+- L'Anova à un facteur ;
+- Les tests classiques, dans le cadre du modèle numérique.
+
+Nous avons vu rapidement les analyses multivariées ou méthodes d'ordination :
+
+- L'ACP (la PCoA et l'ACM) et l'AFC ;
+- Les analyses directes : RDA et CCA.
+
+
+## Statistiques
+
+Nous n'avons pas vu :
+
+- l'Anova à plusieurs facteurs :
+  - triviale si les facteurs sont indépendants (équivalent à une Anova à un facteur sur les combinaisons)
+  - complexe si on traite les interactions, même à deux facteurs.
+- le modèle linéaire généralisé :
+  - quand $Y$ ne vaut pas $\beta_0$ en moyenne et qu'une fonction de lien est nécessaire (quand $Y$ est [entier](https://pmarchand1.github.io/ECL7102/notes_cours/10-Regression_Poisson.html) ou [compris entre 0 et 1](https://pmarchand1.github.io/ECL7102/notes_cours/9-Regression_logistique.html) par exemple).
+- le modèle linéaire mixte :
+  - quand les observations ne sont pas indépendantes ;
+  - quand un groupe de données a un effet aléatoire.
+- les modèles non linéaires et imbriqués.
+  
+Nous avons utilisé l'inférence fréquentiste (par maximum de vraisemblance) mais pas l'inférence bayésienne de ces modèles.
+
+
+## Conclusion
+
+Philosophie générale du cours :
+
+- penser modèle plutôt qu'outil statistique ;
+- simuler des données correspondant au modèle pour le tester avant de l'appliquer aux données réelles ;
+- travailler de façon reproductible :
+  - des scripts, pas de presse-bouton ;
+  - le contrôle de source et l'intégration continue.
+- respecter les bonnes pratiques : 
+  - code propre, noms de variables clairs ;
+  - des paramètres plutôt que des constantes.
+- documenter abondamment, réutiliser ses codes :
+  - le bon code nécessite du temps mais sert longtemps.
+
+
+
+
+<!-- Styles for HTML slides -->
+<style>
+  /* Allow long bibliography */
+  .forceBreak { -webkit-column-break-after: always; break-after: column; }
+  slides > slide { overflow: scroll; }
+  slides > slide:not(.nobackground):after { content: ''; }
+
+  /* First page logo size */
+  .gdbar img {
+    width: 200px !important;
+    height: 55px !important;
+    margin: 8px 8px;
+  }
+  .gdbar {
+    width: 250px !important;
+    height: 70px !important;
+  }
+  
+  /* No logo on slides */
+  slides > slide:not(.nobackground):before {
+    display:none
+  }
+</style>
