@@ -9,7 +9,7 @@
 
 
 
-  <meta name="date" content="2024-02-01" />
+  <meta name="date" content="2024-02-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3207,7 +3207,7 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">01 February 2024</p>
+            <p style="margin-top: 6px; margin-left: -2px;">03 February 2024</p>
           </hgroup>
   </slide>
 
@@ -3252,7 +3252,7 @@ sqrt(x1)</pre>
 ##         return(Log)
 ##     }
 ## }
-## &lt;bytecode: 0x7f9d84a60550&gt;
+## &lt;bytecode: 0x7fe3a8793628&gt;
 ## &lt;environment: namespace:entropart&gt;</pre>
 
 <p></p>
@@ -3299,10 +3299,10 @@ mb &lt;- microbenchmark(sqrt(x1), sapply(x1, FUN = sqrt),
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##                              expr   median
-## 1                        sqrt(x1)  13.3150
-## 2          sapply(x1, FUN = sqrt) 782.9535
-## 3                lapply(x1, sqrt) 578.5610
-## 4 vapply(x1, sqrt, FUN.VALUE = 0) 602.1990</pre>
+## 1                        sqrt(x1)   7.9445
+## 2          sapply(x1, FUN = sqrt) 347.6415
+## 3                lapply(x1, sqrt) 290.8745
+## 4 vapply(x1, sqrt, FUN.VALUE = 0) 293.6075</pre>
 
 <p></p>
 
@@ -3328,8 +3328,8 @@ mb &lt;- microbenchmark(vapply_sqrt(x1), boucle(x1))
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##              expr   median
-## 1 vapply_sqrt(x1)  430.482
-## 2      boucle(x1) 1066.359</pre>
+## 1 vapply_sqrt(x1) 300.9950
+## 2      boucle(x1) 712.8515</pre>
 
 <p></p>
 
@@ -3362,7 +3362,7 @@ racine_x1 &lt;- boucle(x1)</pre>
 
 <pre class = 'prettyprint lang-r'>replicate(3, runif(1))</pre>
 
-<pre >## [1] 0.1349295 0.7730813 0.7825757</pre>
+<pre >## [1] 0.1798271 0.4394653 0.7850207</pre>
 
 <p></p>
 
@@ -3444,8 +3444,8 @@ mb &lt;- microbenchmark(
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##                                       expr median
-## 1 apply(paracou6_x, MARGIN = 2, FUN = sum) 44.808
-## 2                      colSums(paracou6_x)  7.973</pre>
+## 1 apply(paracou6_x, MARGIN = 2, FUN = sum) 31.146
+## 2                      colSums(paracou6_x)  5.355</pre>
 
 <pre class = 'prettyprint lang-r'>colSums(paracou6_x)</pre>
 
@@ -3467,9 +3467,9 @@ summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 <pre >##                                           expr
 ## 1 apply(paracou6_x, 2, function(x) sum(x &gt; 0))
 ## 2                      colSums(paracou6_x &gt; 0)
-##     median
-## 1 177.4220
-## 2  35.7265</pre>
+##    median
+## 1 36.2715
+## 2  8.8370</pre>
 
 <pre class = 'prettyprint lang-r'>colSums(paracou6_x &gt; 0)</pre>
 
@@ -3531,11 +3531,11 @@ repetitions_n &lt;- 1000
 succes_n &lt;- colSums(replicate(repetitions_n, runif(tirages_n)) &lt; p)
 mean(succes_n)</pre>
 
-<pre >## [1] 4998.148</pre>
+<pre >## [1] 4998.137</pre>
 
 <pre class = 'prettyprint lang-r'>sd(succes_n)</pre>
 
-<pre >## [1] 51.40047</pre>
+<pre >## [1] 51.0919</pre>
 
 <p></p>
 

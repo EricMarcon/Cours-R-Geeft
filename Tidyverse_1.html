@@ -9,7 +9,7 @@
 
 
 
-  <meta name="date" content="2024-02-01" />
+  <meta name="date" content="2024-02-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3207,7 +3207,7 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">01 February 2024</p>
+            <p style="margin-top: 6px; margin-left: -2px;">03 February 2024</p>
           </hgroup>
   </slide>
 
@@ -3335,7 +3335,7 @@ diamonds %&gt;% pull(price) %&gt;% mean()</pre>
 
 <p></p>
 
-<p>Le tuyau de base est accessible sans charger <em>magrittr</em>.</p>
+<p>Le tuyau de base est fournit aussi par <em>dplyr</em>, chargé par <em>tidyverse</em>, contrairement à <em>magrittr</em>.</p>
 
 <p>Les autres sont peu utilisés, à éviter.</p>
 
@@ -3378,9 +3378,9 @@ diamonds %&gt;% pull(price) %&gt;% mean()</pre>
 
 </article></slide><slide class=""><hgroup><h2>Fichier csv</h2></hgroup><article  id="fichier-csv">
 
-<p>Fonctions <code>read_csv()</code> et <code>read_csv2()</code></p>
+<p>Fonctions <code>read_csv()</code> et <code>read_csv2()</code>.</p>
 
-<p>Remplacent <code>read.csv()</code> et <code>read.csv2()</code> de base</p>
+<p>Remplacent <code>read.csv()</code> et <code>read.csv2()</code> de base.</p>
 
 <p>Plus rapide que les fonctions originales.</p>
 
@@ -3392,7 +3392,7 @@ diamonds %&gt;% pull(price) %&gt;% mean()</pre>
 
 <p></p>
 
-<p>Approche habituelle en écologie (analyse multivariée par exemple)</p>
+<p>Approche habituelle en écologie (analyse multivariée par exemple).</p>
 
 <p>Si les données sont mal rangées (&ldquo;pas tidy&rdquo;), quelques manipulations de base.</p>
 
@@ -3422,7 +3422,8 @@ diamonds %&gt;% pull(price) %&gt;% mean()</pre>
 
 <p></p>
 
-<pre class = 'prettyprint lang-r'>paracou6 |&gt; 
+<pre class = 'prettyprint lang-r'>library(&quot;dplyr&quot;)
+paracou6 |&gt; 
   unite(col = spName, Family, Genus, Species, remove = FALSE) -&gt;
   paracou6</pre>
 

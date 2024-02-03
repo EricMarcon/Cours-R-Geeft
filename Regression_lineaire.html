@@ -9,7 +9,7 @@
 
 
 
-  <meta name="date" content="2024-02-01" />
+  <meta name="date" content="2024-02-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3207,7 +3207,7 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">01 February 2024</p>
+            <p style="margin-top: 6px; margin-left: -2px;">03 February 2024</p>
           </hgroup>
   </slide>
 
@@ -3828,9 +3828,70 @@ mod_l2 &lt;- tibble(
 
 <p></p>
 
-</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Ancova</h2></hgroup><article  id="ancova">
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Régression sur les rangs</h2></hgroup><article  id="régression-sur-les-rangs">
 
 </article></slide><slide class=""><hgroup><h2>Théorie</h2></hgroup><article  id="théorie-2">
+
+<p>Si les résidus ne sont pas normaux, il est possible de faire la régression sur les rangs des variables :</p>
+
+<ul>
+<li>régression simple : revient à tester la corrélation de Spearman.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Exemple</h2></hgroup><article  id="exemple-1">
+
+<p>Modèle univarié :</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>lm(rank(y) ~ rank(x), data = mod_l1)|&gt; summary()</pre>
+
+<pre >## 
+## Call:
+## lm(formula = rank(y) ~ rank(x), data = mod_l1)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -42.203 -11.867   1.019  11.140  41.659 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 10.22667    3.54507   2.885  0.00482
+## rank(x)      0.79749    0.06095  13.085  &lt; 2e-16
+##                
+## (Intercept) ** 
+## rank(x)     ***
+## ---
+## Signif. codes:  
+## 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 17.59 on 98 degrees of freedom
+## Multiple R-squared:  0.636,  Adjusted R-squared:  0.6323 
+## F-statistic: 171.2 on 1 and 98 DF,  p-value: &lt; 2.2e-16</pre>
+
+<p> ## Exemple</p>
+
+<p>Test de la corrélation :</p>
+
+<p></p>
+
+<pre class = 'prettyprint lang-r'>with(mod_l1, cor.test(x, y, method = &quot;spearman&quot;))</pre>
+
+<pre >## 
+##  Spearman&#39;s rank correlation rho
+## 
+## data:  x and y
+## S = 33748, p-value &lt; 2.2e-16
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.7974917</pre>
+
+<p> Les modèles sont équivalents et donnent la même p-value.</p>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Ancova</h2></hgroup><article  id="ancova">
+
+</article></slide><slide class=""><hgroup><h2>Théorie</h2></hgroup><article  id="théorie-3">
 
 <p>Modèle de régression multiple avec des covariables catégorielles, codées sous forme d’indicatrices (autant d’indicatrices que de modalités - 1).</p>
 
@@ -3841,10 +3902,10 @@ mod_l2 &lt;- tibble(
 <ul>
 <li>\(Y\) est la hauteur des arbres ;</li>
 <li>\(X_1\) est leur diamètre ;</li>
-<li>L’espèce est codée par une variable indicatrice, par exemple \(X_2 = \mathbb{1}(&quot;Cedre&quot;)\).</li>
+<li>L’espèce est codée par une variable indicatrice, par exemple \(X_2 = \mathbb{1}(&#39;Cedre&#39;)\).</li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Exemple</h2></hgroup><article  id="exemple-1">
+</article></slide><slide class=""><hgroup><h2>Exemple</h2></hgroup><article  id="exemple-2">
 
 <p></p>
 
