@@ -198,7 +198,7 @@ kruskal.test(hauteur ~ espece, data = ventoux)
 Le test de Kruskal-Wallis étend le test de Spearman à plus de deux groupes.
 
 
-# Plus de deux groupes
+# Tests post-hoc
 
 ## Manchots
 
@@ -246,7 +246,7 @@ Solution : réduire le seuil de risque $\alpha_m$ (pour *multiple*) :
 $$\alpha_m = 1 - (1 - \alpha)^n \approx \alpha / n$$
 C'est la correction de *Bonferroni*.
 
-## Test de Dunett
+## Test de Dunnett
 
 Si un groupe est la référence (par exemple, le témoin), utiliser le test de Dunett, plus puissant.
 
