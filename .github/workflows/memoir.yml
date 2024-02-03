@@ -28,7 +28,9 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GH_PAT }}
         run: |
-          lapply(list.files(pattern = "*.Rmd"), function(file) rmarkdown::render(file, "all", envir = new.env()))
+          # Load MASS before knitting because multcomp loads MASS::select and hides dplyr::select
+          install.packages("MASS") ; library("MASS")
+          lapply(list.files(pattern = "*.Rmd"), function(file) rmarkdown::render(file, "all"))
           memoiR::build_githubpages()
         shell: Rscript {0}
       - name: GH Pages Theme

@@ -269,11 +269,11 @@ Modèle linéaire : `lm(Y ~ 1 + X)`
 Simulation de tirages corrélés
 
 ```{r}
-# library(MASS) : non chargée à cause de MASS::select()
+library(MASS) # Attention à MASS::select()
 # Matrice de covariance
 Sigma <- matrix(c(1, 0.8, 0.8, 1), nrow = 2)
 # Simulation de X et Y
-XY <- MASS::mvrnorm(n, mu = c(mu, mu_0), Sigma = Sigma)
+XY <- mvrnorm(n, mu = c(mu, mu_0), Sigma = Sigma)
 ```
 
 Test:
