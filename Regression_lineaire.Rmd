@@ -584,12 +584,12 @@ s3d <- scatterplot3d(
 # Quels points sont au-dessus du plan ?
 is_over <- resid(mod_l2_lm) > 0
 # Segments du point au plan
-y_xyz <- s3d$xyz.convert(mod_l2$x_1, mod_l2$x_2, mod_l2$y)
-ystar_xyz <- s3d$xyz.convert(mod_l2$x_1, mod_l2$x_2, fitted(mod_l2_lm))
+xyz_y <- s3d$xyz.convert(mod_l2$x_1, mod_l2$x_2, mod_l2$y)
+xyz_ystar <- s3d$xyz.convert(mod_l2$x_1, mod_l2$x_2, fitted(mod_l2_lm))
 # Tracé des segments
 segments(
-  x0 = y_xyz$x, y0 = y_xyz$y, 
-  x1 = ystar_xyz$x, y1 = ystar_xyz$y, 
+  x0 = xyz_y$x, y0 = xyz_y$y, 
+  x1 = xyz_ystar$x, y1 = xyz_ystar$y, 
   col = c("orange", "red")[1 + is_over],
   # Pointillé ou plein selon la position
   lwd = 1.5
@@ -612,7 +612,6 @@ s3d$points3d(
   pch = 19, 
   col = "black"
 )
-
 ```
 
 ## Hypothèses
