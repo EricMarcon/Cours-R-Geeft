@@ -308,7 +308,8 @@ Une fonction produit une valeur à partir d'arguments.
 ## Effets de bord
 
 Une fonction peut avoir des effets de bord :
-```{r, out.width="20%"}
+```{r}
+#| out.width: 20%
 x <- plot(y)
 x
 ```
