@@ -187,8 +187,9 @@ quantile(hdv2003$age, probs = c(0.025, 0.975))
 ## Boîte à moustaches
 
 ```{r}
-boxplot(hdv2003$age)
+boxplot(hdv2003$age ~ hdv2003$sexe)
 ```
+
 ## Comptages
 
 Pour les variables discrètes.
@@ -232,6 +233,7 @@ Fonction quantile:
 ```{r}
 qunif(p = 0.95, min = 0, max = 2)
 ```
+
 ## Loi uniforme
 
 Tirage:
