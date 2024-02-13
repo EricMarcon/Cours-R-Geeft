@@ -301,7 +301,7 @@ colSums(paracou6_x > 0)
 Remarquer :
 
 - le comptage d'un résultat de test (`TRUE` vaut 1, `FALSE` vaut 0)
-- la définition d'une fonction sans nom, appelée "fonction lambda".
+- la fonction sans nom, appelée "fonction lambda".
 
 
 ## Fonctions complexes
