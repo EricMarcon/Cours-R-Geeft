@@ -9,7 +9,6 @@
 
 
 
-  <meta name="date" content="2024-02-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3207,7 +3206,7 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">03 February 2024</p>
+            <p style="margin-top: 6px; margin-left: -2px;">13 février 2024</p>
           </hgroup>
   </slide>
 
@@ -3252,7 +3251,7 @@ sqrt(x1)</pre>
 ##         return(Log)
 ##     }
 ## }
-## &lt;bytecode: 0x7f8893c56660&gt;
+## &lt;bytecode: 0x7f7a41cf44e8&gt;
 ## &lt;environment: namespace:entropart&gt;</pre>
 
 <p></p>
@@ -3299,10 +3298,10 @@ mb &lt;- microbenchmark(sqrt(x1), sapply(x1, FUN = sqrt),
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##                              expr   median
-## 1                        sqrt(x1)   5.1075
-## 2          sapply(x1, FUN = sqrt) 366.5230
-## 3                lapply(x1, sqrt) 292.0800
-## 4 vapply(x1, sqrt, FUN.VALUE = 0) 287.5180</pre>
+## 1                        sqrt(x1)  10.1435
+## 2          sapply(x1, FUN = sqrt) 432.2695
+## 3                lapply(x1, sqrt) 365.1275
+## 4 vapply(x1, sqrt, FUN.VALUE = 0) 382.3470</pre>
 
 <p></p>
 
@@ -3328,8 +3327,8 @@ mb &lt;- microbenchmark(vapply_sqrt(x1), boucle(x1))
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##              expr   median
-## 1 vapply_sqrt(x1) 307.6265
-## 2      boucle(x1) 866.8785</pre>
+## 1 vapply_sqrt(x1) 389.8160
+## 2      boucle(x1) 904.7875</pre>
 
 <p></p>
 
@@ -3443,9 +3442,12 @@ mb &lt;- microbenchmark(
 )
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
-<pre >##                                       expr median
-## 1 apply(paracou6_x, MARGIN = 2, FUN = sum) 51.601
-## 2                      colSums(paracou6_x)  7.662</pre>
+<pre >##                                       expr
+## 1 apply(paracou6_x, MARGIN = 2, FUN = sum)
+## 2                      colSums(paracou6_x)
+##    median
+## 1 41.0510
+## 2  6.7095</pre>
 
 <pre class = 'prettyprint lang-r'>colSums(paracou6_x)</pre>
 
@@ -3467,9 +3469,9 @@ summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 <pre >##                                           expr
 ## 1 apply(paracou6_x, 2, function(x) sum(x &gt; 0))
 ## 2                      colSums(paracou6_x &gt; 0)
-##    median
-## 1 60.2285
-## 2 14.8755</pre>
+##   median
+## 1 45.295
+## 2 11.034</pre>
 
 <pre class = 'prettyprint lang-r'>colSums(paracou6_x &gt; 0)</pre>
 
@@ -3482,7 +3484,7 @@ summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <ul>
 <li>le comptage d’un résultat de test (<code>TRUE</code> vaut 1, <code>FALSE</code> vaut 0)</li>
-<li>la définition d’une fonction sans nom, appelée &ldquo;fonction lambda&rdquo;.</li>
+<li>la fonction sans nom, appelée &ldquo;fonction lambda&rdquo;.</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Fonctions complexes</h2></hgroup><article  id="fonctions-complexes">
