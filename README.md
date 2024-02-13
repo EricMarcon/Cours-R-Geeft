@@ -130,7 +130,9 @@ Supports :
 
 ## Méthodes d'ordination
 
-A venir.
+Supports :
+
+- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Ordination.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Ordination.pdf)
 
 
 ## Aller plus loin
