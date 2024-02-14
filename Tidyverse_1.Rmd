@@ -396,7 +396,7 @@ paracou6 |>
 
 ## Lier deux tables
 
-`bind_cols()` et `bindrows()`.
+`bind_cols()` et `bind_rows()`.
 
 ```{r}
 t1 <- tibble(col2 = c("A", "B"), col3 = 3:4)

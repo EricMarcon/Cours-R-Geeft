@@ -170,7 +170,7 @@ hist(
   prob = TRUE,
   main = "",
   xlab = "Nombre de frères et soeurs"
-  )
+)
 lines(
   density.reflected(hdv2003$freres.soeurs, lower = 0), 
   col = "red"
@@ -218,6 +218,7 @@ Densité de probabilité:
 ```{r}
 curve(dunif(x, min = 0, max = 1), from = 0, to = 1)
 ```
+
 ## Loi uniforme
 
 Fonction cumulative :
