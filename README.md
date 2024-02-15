@@ -119,20 +119,21 @@ Supports :
 Supports :
 
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Anova.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Anova.pdf)
-
+- [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : [Tableaux de contingence et ANOVA](https://pmarchand1.github.io/ECL7102/notes_cours/5-Chi2_ANOVA.html)
 
 ## Tests
 
 Supports :
 
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Tests.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Tests.pdf)
-
+- [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : [Tests d’hypothèses](https://pmarchand1.github.io/ECL7102/notes_cours/4-Tests_hypothese.html)
 
 ## Méthodes d'ordination
 
 Supports :
 
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/Ordination.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/Ordination.pdf)
+- [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : Analyses multivariées, [Partie 1](https://pmarchand1.github.io/ECL7102/notes_cours/13-Analyses_multivariees_Partie1.html) et [Partie 2](https://pmarchand1.github.io/ECL7102/notes_cours/14-Analyses_multivariees_Partie2.html).
 
 
 ## Aller plus loin

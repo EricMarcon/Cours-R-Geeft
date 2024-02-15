@@ -3206,7 +3206,7 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">14 février 2024</p>
+            <p style="margin-top: 6px; margin-left: -2px;">15 février 2024</p>
           </hgroup>
   </slide>
 
@@ -3336,7 +3336,7 @@ mod_l1 &lt;- tibble(x, y = rnorm(n, mean = beta_0 + beta_1*x, sd = sigma))</pre>
 
 </article></slide><slide class=""><hgroup><h2>Homoscédasticité et indépendance des erreurs</h2></hgroup><article  id="homoscédasticité-et-indépendance-des-erreurs">
 
-<p>Graphique \(\Epsilon \sim Y*\)</p>
+<p>Graphique \(\Epsilon \sim Y^\star\)</p>
 
 <p></p>
 
@@ -3420,7 +3420,7 @@ mod_l1 &lt;- tibble(x, y = rnorm(n, mean = beta_0 + beta_1*x, sd = sigma))</pre>
 
 <ul>
 <li>la relation n’est pas linéaire (ex.: quadratique) ;</li>
-<li>l’erreur augmente avec \(Y*\) (\(\to\) racine carrée ou logarithme).</li>
+<li>l’erreur augmente avec \(Y^\star\) (\(\to\) racine carrée ou logarithme).</li>
 </ul></li>
 <li>Revoir les hypothèses à l’origine du modèle, le design expérimental…</li>
 </ul>
@@ -3488,7 +3488,7 @@ mod_l1 &lt;- tibble(x, y = rnorm(n, mean = beta_0 + beta_1*x, sd = sigma))</pre>
 
 <p>L’estimateur est distribué normalement (quand \(\Epsilon\) est normal) :</p>
 
-<p>\[\hat{\beta}_1 \sim \mathcal{N}(0.447, 0.0352^{2})\]</p>
+<p>\[\hat{\beta}_1 \sim \mathcal{N}(0.447, \sigma_1^2)\] où \(\sigma_1\) est l’écart-type de l’estimateur. <code>lm()</code> donne son erreur standard, c’est-à-dire \(\sigma_1/\sqrt{n}\).</p>
 
 <p>Un test de Student donne la probabilité de se tromper en affirmant que l’estimateur n’est pas nul.</p>
 
@@ -3946,7 +3946,7 @@ lm(log(V) ~ log(D))</pre>
 
 <p>Modèle mécaniste : la relation entre volume et diamètre est à la puissance 3 si l’arbre est un cylindre.</p>
 
-<p>Contrôle de la variance : dans certains cas, la variance augmente avec \(Y^\star\). On peut essayer de régresser \(\sqrt(Y)\) ou \(\ln(Y)\).</p>
+<p>Contrôle de la variance : dans certains cas, la variance augmente avec \(Y^\star\). On peut essayer de régresser \(\sqrt{Y}\) ou \(\ln(Y)\).</p>
 
 <p>Mais on ne doit pas tenter à l’aveugle toutes les transformations possibles : voir le problème des tests multiples dans le cours sur l’Anova.</p>
 
@@ -4030,9 +4030,9 @@ lm(log(V) ~ log(D))</pre>
 
 <p>Beaucoup de méthodes pour choisir le &ldquo;meilleur&rdquo; modèle, solide support théorique.</p>
 
-<p>Critère AIC : \(-2 \ln(L) + 2K\) où \(L\) est la vraisemblance et \(K\) le nombre de paramètres (les \(\beta_i\) et \(\sigma\)).</p>
+<p>Critère d’Information d’Akaike (AIC) : \(2K -2 \ln(L)\) où \(L\) est la vraisemblance et \(K\) le nombre de paramètres (les \(\beta_i\) et \(\sigma\)).</p>
 
-<p>Critère AICc pour de petits échantillons : \[-2 \ln(L) + 2K \frac{n}{n -K -1}\]</p>
+<p>Critère AICc pour de petits échantillons : \[2K \frac{n}{n -K -1} -2 \ln(L) \]</p>
 
 </article></slide><slide class=""><hgroup><h2>Exemple</h2></hgroup><article  id="exemple-3">
 
@@ -4111,24 +4111,24 @@ modavgPred(ventoux_lm_list, newdata = ventoux_nouveau)</pre>
 
 </article></slide><slide class=""><hgroup><h2>Sélection systématique</h2></hgroup><article  id="sélection-systématique">
 
-<p>Sélection (<em>forward</em>) :</p>
+<p>Sélection (<em>backward</em>) :</p>
 
 <ul>
 <li>Estimer le modèle complet,</li>
 <li>Retirer la covariable qui fait le plus diminuer l’AIC jusqu’à ce qu’il ne diminue plus</li>
 </ul>
 
-<p>Élimination (<em>backward</em>) :</p>
+<p>Élimination (<em>forward</em>) :</p>
 
 <ul>
-<li>Estimer le modèle null</li>
-<li>Ajouter a covariable qui fait le plus diminuer l’AIC jusqu’à ce qu’il ne diminue plus</li>
+<li>Estimer le modèle nul,</li>
+<li>Ajouter la covariable qui fait le plus diminuer l’AIC jusqu’à ce qu’il ne diminue plus.</li>
 </ul>
 
 <p>Mixte (<em>stepwise</em>):</p>
 
 <ul>
-<li>Sélection puis élimination successives.</li>
+<li>Élimination puis sélection successives.</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Exemple</h2></hgroup><article  id="exemple-6">
