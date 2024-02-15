@@ -67,7 +67,8 @@ Packages <- c(
   "FactoMineR", 
   "factoextra",
   "scatterplot3d",
-  "MASS"
+  "MASS",
+  "vegan"
 )
 # Install them
 InstallPackages(Packages)
@@ -364,7 +365,7 @@ Visualisation avec *factoextra*.
 ```{r}
 #| out.width: 55%
 # ACP
-XYZ_pca <- prcomp(XYZ)
+XYZ_pca <- prcomp(XYZ, scale = TRUE)
 library("factoextra")
 fviz_eig(XYZ_pca)
 ```
@@ -375,6 +376,7 @@ Affichage des valeurs propres.
 ## ACP : Pratique
 
 ```{r}
+#| out.width: 70%
 fviz_pca_ind(
   XYZ_pca,
   col.ind = "cos2", # Color by the quality of representation
@@ -387,6 +389,7 @@ fviz_pca_ind(
 ## ACP : Pratique
 
 ```{r}
+#| out.width: 70%
 fviz_pca_var(
   XYZ_pca,
   col.var = "contrib", # Color by contributions to the PC
@@ -502,6 +505,50 @@ L'inertie totale est la statistique du $\chi^2$ fois $y_{++}$ : l'écart à l'in
 L'inertie d'un point est sa contribution à cette statistique.
 
 La projection capture le maximum d'inertie.
+
+
+## AFC : pratique
+
+Le jeu de données dune du package *vegan* contient des données d'abondance de 30 espèces végétales sur 20 sites.
+
+```{r}
+library("vegan")
+data(dune)
+library("FactoMineR")
+dune_ca <- CA(dune, graph = FALSE)
+```
+
+
+## AFC : Pratique
+
+```{r}
+#| out.width: 70%
+fviz_ca_row(
+  dune_ca,
+  repel = TRUE     # Avoid text overlapping
+)
+```
+
+
+## AFC : Pratique
+
+```{r}
+#| out.width: 70%
+fviz_ca_col(
+  dune_ca,
+  repel = TRUE     # Avoid text overlapping
+)
+```
+
+
+## AFC : Pratique
+
+```{r}
+fviz_ca_biplot(
+  dune_ca, 
+  repel = TRUE
+)
+```
 
 
 ## Detrended Correspondence Analysis
