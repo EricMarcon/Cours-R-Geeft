@@ -252,7 +252,7 @@ Syntaxe de la formule :
 
 ## Homoscédasticité et indépendance des erreurs
 
-Graphique $\Epsilon \sim Y*$
+Graphique $\Epsilon \sim Y^\star$
 
 ```{r}
 #| out.width: 60%
@@ -315,7 +315,7 @@ Affaire d'expérience.
 - Éliminer les points (réellement) aberrants ;
 - Transformer $Y$ si :
   - la relation n'est pas linéaire (ex.: quadratique) ;
-  - l'erreur augmente avec $Y*$ ($\to$ racine carrée ou logarithme).
+  - l'erreur augmente avec $Y^\star$ ($\to$ racine carrée ou logarithme).
 - Revoir les hypothèses à l'origine du modèle, le design expérimental...
 
 
@@ -388,7 +388,9 @@ L'estimateur de chaque coefficient est sa valeur la plus probable.
 
 L'estimateur est distribué normalement (quand $\Epsilon$ est normal) :
 
-$$\hat{\beta}_1 \sim \mathcal{N}(`r format(mod_l1_lm$coefficients[2], digits = 3)`, `r format(summary(mod_l1_lm)$coefficients[2, 2], digits = 3)`^{2})$$
+$$\hat{\beta}_1 \sim \mathcal{N}(`r format(mod_l1_lm$coefficients[2], digits = 3)`, \sigma_1^2)$$
+où $\sigma_1$ est l'écart-type de l'estimateur.
+`lm()` donne son erreur standard, c'est-à-dire $\sigma_1/\sqrt{n}$.
 
 Un test de Student donne la probabilité de se tromper en affirmant que l'estimateur n'est pas nul.
 
@@ -735,7 +737,7 @@ lm(V ~ poly(D, degree = 3))
 Modèle mécaniste : la relation entre volume et diamètre est à la puissance 3 si l'arbre est un cylindre.
 
 Contrôle de la variance : dans certains cas, la variance augmente avec $Y^\star$.
-On peut essayer de régresser $\sqrt(Y)$  ou $\ln(Y)$.
+On peut essayer de régresser $\sqrt{Y}$  ou $\ln(Y)$.
 
 Mais on ne doit pas tenter à l'aveugle toutes les transformations possibles : voir le problème des tests multiples dans le cours sur l'Anova. 
 
@@ -812,10 +814,10 @@ Cas extrême : $Y = \beta_0 +  \sum_{i=1}^{n-1}{\beta_i X_i} + \Epsilon$
 
 Beaucoup de méthodes pour choisir le "meilleur" modèle, solide support théorique.
 
-Critère AIC : $-2 \ln(L) + 2K$ où $L$ est la vraisemblance et $K$ le nombre de paramètres (les $\beta_i$ et $\sigma$).
+Critère d'Information d'Akaike (AIC) : $2K -2 \ln(L)$ où $L$ est la vraisemblance et $K$ le nombre de paramètres (les $\beta_i$ et $\sigma$).
 
 Critère AICc pour de petits échantillons : 
-$$-2 \ln(L) + 2K \frac{n}{n -K -1}$$
+$$2K \frac{n}{n -K -1} -2 \ln(L) $$
 
 ## Exemple
 
@@ -863,19 +865,19 @@ modavgPred(ventoux_lm_list, newdata = ventoux_nouveau)
 
 ## Sélection systématique
 
-Sélection (*forward*) :
+Sélection (*backward*) :
 
 - Estimer le modèle complet,
 - Retirer la covariable qui fait le plus diminuer l'AIC jusqu'à ce qu'il ne diminue plus
 
-Élimination (*backward*) :
+Élimination (*forward*) :
 
-- Estimer le modèle null
-- Ajouter a covariable qui fait le plus diminuer l'AIC jusqu'à ce qu'il ne diminue plus
+- Estimer le modèle nul,
+- Ajouter la covariable qui fait le plus diminuer l'AIC jusqu'à ce qu'il ne diminue plus.
 
 Mixte (*stepwise*): 
 
-- Sélection puis élimination successives.
+- Élimination puis sélection successives.
 
 
 ## Exemple

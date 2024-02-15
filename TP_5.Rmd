@@ -163,7 +163,7 @@ $$\mathrm{Cov}(X, Y) = \mathbb{E}[(X - \mathbb{E}(X))(Y - \mathbb{E}(Y))]$$
 donc $$\mathrm{var}(X) = \mathrm{Cov}(X, X)$$
 
 Empiriquement :
-$$\hat{\mathrm{Cov}}(X, Y) = \frac{1}{n - 1}\sum_i{(x_i - \bar{x})(y_j - \bar{y})}$$
+$$\hat{\mathrm{Cov}}(X, Y) = \frac{1}{n - 1}\sum_i{(x_i - \bar{x})(y_i - \bar{y})}$$
 
 ## Estimation
 
@@ -191,7 +191,7 @@ Pour simplifier l'interprétation, on normalise la covariance par le produit des
 $$\mathrm{Cor}(X, Y) = \frac{\mathrm{Cov}(X, Y)}{\sqrt{(\mathrm{var}(X)\mathrm{var}(Y))}}$$
 Donc $\mathrm{Cor}(X, X) = 1$ et $\mathrm{Cor}(X, -X) = -1$.
 
-La covariance est comprise entre -1 et 1.
+La corrélation est comprise entre -1 et 1.
 
 ```{r}
 with(ventoux, cor(hauteur, diametre))
