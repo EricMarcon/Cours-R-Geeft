@@ -364,7 +364,7 @@ ggplot() +
 ## R²
 
 R² mesure la proportion de la variance de Y expliquée par le modèle : 
-$$R^2 = \frac{\mathrm{Var}(Y^\star)}{\mathrm{Var}(Y)} = 1 - \frac{\sigma}{\mathrm{Var}(Y)}$$
+$$R^2 = \frac{\mathrm{Var}(Y^\star)}{\mathrm{Var}(Y)} = 1 - \frac{\sigma^2}{\mathrm{Var}(Y)}$$
 
 
 $\to$ Que devient R² en doublant $\sigma$ ?
