@@ -248,7 +248,7 @@ C'est la correction de *Bonferroni*.
 
 ## Test de Dunnett
 
-Si un groupe est la référence (par exemple, le témoin), utiliser le test de Dunett, plus puissant.
+Si un groupe est la référence (par exemple, le témoin), utiliser le test de Dunnett, plus puissant.
 
 Le groupe de référence est le premier des facteurs.
 
@@ -261,7 +261,7 @@ penguins$species <- relevel(penguins$species, ref = "Gentoo")
 str(penguins$species)
 ```
 
-## Test de Dunett
+## Test de Dunnett
 
 ```{r}
 penguins_aov |> glht(linfct = mcp(species = "Dunnett")) |> summary()
