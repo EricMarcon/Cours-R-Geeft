@@ -3206,7 +3206,7 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">16 février 2024</p>
+            <p style="margin-top: 6px; margin-left: -2px;">17 février 2024</p>
           </hgroup>
   </slide>
 
@@ -3422,6 +3422,26 @@ fviz_eig(XYZ_pca)</pre>
 
 <p><code>ade4::dudi.pco()</code>.</p>
 
+</article></slide><slide class=""><hgroup><h2>Non-Metric Multidimensional Scaling</h2></hgroup><article  id="non-metric-multidimensional-scaling">
+
+<p>Kruskal, J.B. 1964. Multidimensional scaling by optimizing goodness of fit to a nonmetric hypothesis. <em>Psychometrika</em> 29:1-27</p>
+
+<p>Anglais : NMDS</p>
+
+<p>Objectif : identique à la PCoA mais sans projection. Les sites sont placés dans un espace de dimension choisie de façon à maximiser la corrélation entre l’ordre de leurs distances dans les deux espaces.</p>
+
+</article></slide><slide class=""><hgroup><h2>NMDS : méthode</h2></hgroup><article  id="nmds-méthode">
+
+<p>Optimisation par itération : les points sont déplacés aléatoirement. Calcul très lourd, risque de minimum local.</p>
+
+<p>Le choix de la métrique est important.</p>
+
+<p>Critère de choix : le stress, mesure le désaccord entre l’ordination obtenue et une ordination parfaite.</p>
+
+</article></slide><slide class=""><hgroup><h2>NMDS: pratique</h2></hgroup><article  id="nmds-pratique">
+
+<p><code>vegan::metaMDS()</code>, distance de Bray-Curtis par défaut.</p>
+
 </article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Réponse non linéaire, analyse indirecte</h2></hgroup><article  id="réponse-non-linéaire-analyse-indirecte">
 
 </article></slide><slide class=""><hgroup><h2>Analyse Factorielle des Correspondances</h2></hgroup><article  id="analyse-factorielle-des-correspondances">
@@ -3534,26 +3554,6 @@ dune_ca &lt;- CA(dune, graph = FALSE)</pre>
 <p><code>vegan::decorana</code>.</p>
 
 <p>Limites : faible support mathématique.</p>
-
-</article></slide><slide class=""><hgroup><h2>Non-Metric Multidimensional Scaling</h2></hgroup><article  id="non-metric-multidimensional-scaling">
-
-<p>Kruskal, J.B. 1964. Multidimensional scaling by optimizing goodness of fit to a nonmetric hypothesis. <em>Psychometrika</em> 29:1-27</p>
-
-<p>Anglais : NMDS</p>
-
-<p>Objectif : identique à la PCoA mais sans projection. Les sites sont placés dans un espace de dimension choisie de façon à maximiser la corrélation entre l’ordre de leurs distances dans les deux espaces.</p>
-
-</article></slide><slide class=""><hgroup><h2>NMDS : méthode</h2></hgroup><article  id="nmds-méthode">
-
-<p>Optimisation par itération : les points sont déplacés aléatoirement. Calcul très lourd, risque de minimum local.</p>
-
-<p>Le choix de la métrique est important.</p>
-
-<p>Critère de choix : le stress, mesure le désaccord entre l’ordination obtenue et une ordination parfaite.</p>
-
-</article></slide><slide class=""><hgroup><h2>NMDS: pratique</h2></hgroup><article  id="nmds-pratique">
-
-<p><code>vegan::metaMDS()</code>, distance de Bray-Curtis par défaut.</p>
 
 </article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Analyse directe</h2></hgroup><article  id="analyse-directe">
 
