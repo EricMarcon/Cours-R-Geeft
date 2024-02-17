@@ -454,6 +454,32 @@ Pas de biplot : seules les distances entre relevés sont connues.
 `ade4::dudi.pco()`.
 
 
+## Non-Metric Multidimensional Scaling
+
+Kruskal, J.B. 1964. Multidimensional scaling by optimizing goodness of fit to a nonmetric hypothesis. *Psychometrika* 29:1-27
+
+Anglais : NMDS
+
+Objectif : identique à la PCoA mais sans projection. 
+Les sites sont placés dans un espace de dimension choisie de façon à maximiser la corrélation entre l’ordre de leurs distances dans les deux espaces.
+
+
+## NMDS : méthode
+
+Optimisation par itération : les points sont déplacés aléatoirement. 
+Calcul très lourd, risque de minimum local.
+
+Le choix de la métrique est important.
+
+Critère de choix : le stress, mesure le désaccord entre l'ordination obtenue et une ordination parfaite.
+
+
+## NMDS: pratique
+
+`vegan::metaMDS()`, distance de Bray-Curtis par défaut.
+
+
+
 # Réponse non linéaire, analyse indirecte
 
 
@@ -567,31 +593,6 @@ Après l’AFC, l’arc est découpé en segments qui sont ensuite alignés.
 `vegan::decorana`.
 
 Limites : faible support mathématique.
-
-
-## Non-Metric Multidimensional Scaling
-
-Kruskal, J.B. 1964. Multidimensional scaling by optimizing goodness of fit to a nonmetric hypothesis. *Psychometrika* 29:1-27
-
-Anglais : NMDS
-
-Objectif : identique à la PCoA mais sans projection. 
-Les sites sont placés dans un espace de dimension choisie de façon à maximiser la corrélation entre l’ordre de leurs distances dans les deux espaces.
-
-
-## NMDS : méthode
-
-Optimisation par itération : les points sont déplacés aléatoirement. 
-Calcul très lourd, risque de minimum local.
-
-Le choix de la métrique est important.
-
-Critère de choix : le stress, mesure le désaccord entre l'ordination obtenue et une ordination parfaite.
-
-
-## NMDS: pratique
-
-`vegan::metaMDS()`, distance de Bray-Curtis par défaut.
 
 
 # Analyse directe
