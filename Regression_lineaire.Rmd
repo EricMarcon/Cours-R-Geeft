@@ -742,6 +742,27 @@ On peut essayer de régresser $\sqrt{Y}$  ou $\ln(Y)$.
 Mais on ne doit pas tenter à l'aveugle toutes les transformations possibles : voir le problème des tests multiples dans le cours sur l'Anova. 
 
 
+## Ventoux transformé
+
+Les modèles allométriques prévoient que la hauteur des arbres est liée au diamètre à une puissance inférieure à 1 : plus l'arbre est grand, moins il a besoin d'investir en hauteur et plus en diamètre.
+
+Le modèle est alors $$\ln(Y) = \beta_0 + \beta_1 \log(X_1) + \Epsilon$$
+
+- $Y$ est la hauteur des arbres ;
+- $X_1$ est leur diamètre ;
+- $\beta_1$  est la puissance dans le modèle $Y \sim X_1^{\beta_1}$
+
+
+## Ventoux transformé
+
+```{r}
+(ventoux_lm <- lm(log(hauteur) ~ log(diametre), data = ventoux))
+```
+
+Ce modèle s'ajuste mieux aux données.
+
+Il sera étudié en cours de dendrométrie.
+
 
 # Ancova
 
