@@ -438,7 +438,7 @@ Graphiques simples :
 
 ```{r, out.width="60%"}
 X <- 1:10
-Y <- 2 * X + rnorm(length(X))
+Y <- 2 * X + rnorm(n = length(X))
 plot(x = X, y = Y)
 lines(x = X, y = Y, col = "green", lty = 2)
 abline(a = 0, b = 2, col = "red")

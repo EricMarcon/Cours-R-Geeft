@@ -136,10 +136,10 @@ R (avec RStudio) est un environnement de travail en plus d'un logiciel de statis
 Nous avons vu :
 
 - Comment rédiger des documents très simples (bloc-note) ou très élaborés (livre), reproductibles, indépendamment de leur format final (HTML, PDF, Word...)
-- Comment utiliser git pour le contrôle de source et GitHub pour le partage, l'intégration continue et la publication.
 
 Nous n'avons pas vu :
 
+- Comment utiliser git pour le contrôle de source et GitHub pour le partage, l'intégration continue et la publication.
 - D'autres types de production : [site web](https://ericmarcon.github.io/), [CV](https://ericmarcon.github.io/CV/), [etc](https://rmarkdown.rstudio.com/gallery.html) ;
 - Les applications R interactives avec [Shiny](https://ericmarcon.github.io/travailleR/chap-shiny.html) ;
 - Les [outils d'enseignement](https://ericmarcon.github.io/travailleR/chap-enseigner.html).

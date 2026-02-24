@@ -106,7 +106,7 @@ set.seed(973)
 
 Données bien rangées (_tidy_).
 
-Enchaînement des opérations (`|>` de _magrittr_, `+` de _ggplot2_).
+Enchaînement des opérations (`%>%` de _magrittr_, `+` de _ggplot2_).
 
 Programmation fonctionnelle (pas orientée objet), optimisée pour les utilisateurs (lisibilité plutôt que performance).
 

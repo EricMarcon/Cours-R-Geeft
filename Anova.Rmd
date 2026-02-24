@@ -127,6 +127,7 @@ read_csv2("data/Inv_GEEFT_Ventoux_09-2020.csv") |>
     )
   ) -> ventoux
 ```
+
 Les cèdres sont-ils plus haut que les pins ?
 
 ```{r}
@@ -242,8 +243,10 @@ Le seuil de risque de 5% signifie que 5% des tests seront des faux positifs.
 
 Avec 7 groupes, on fait $6 \times 7 / 2 = 21$ tests d'égalité, donc on attend un faux positif.
 
+Le risque de rejeter au moins une fois l'hypothèse nulle est
+$$1 - (1 - \alpha)^n \approx n\alpha$$
 Solution : réduire le seuil de risque $\alpha_m$ (pour *multiple*) :
-$$\alpha_m = 1 - (1 - \alpha)^n \approx \alpha / n$$
+$$\alpha_m = \alpha / n$$
 C'est la correction de *Bonferroni*.
 
 ## Test de Dunnett
@@ -255,18 +258,12 @@ Le groupe de référence est le premier des facteurs.
 ```{r}
 str(penguins$species)
 ```
+
 Il peut être modifié :
 ```{r}
 penguins$species <- relevel(penguins$species, ref = "Gentoo")
 str(penguins$species)
 ```
-
-## Test de Dunnett
-
-```{r}
-penguins_aov |> glht(linfct = mcp(species = "Dunnett")) |> summary()
-```
-
 
 ## Graphiques
 

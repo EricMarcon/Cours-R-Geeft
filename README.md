@@ -39,13 +39,6 @@ Statistiques univariées et lois de probabilité :
 - [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : [Modèles statistiques et intervalles de confiance](https://pmarchand1.github.io/ECL7102/notes_cours/3-Modeles_statistiques.html)
 
 
-## Contrôle de source
-
-Utilisation de git et Github :
-
-- Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/git.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/git.pdf)
-- [Travailler avec R](https://ericmarcon.github.io/travailleR/chap-git.html) : Git et Github.
-
 
 ## Le tidyverse 1/2
 
@@ -106,7 +99,7 @@ Statistiques bivariées :
 - Diaporama [HTML](https://EricMarcon.github.io/Cours-R-Geeft/TP_5.html) ou [PDF](https://EricMarcon.github.io/Cours-R-Geeft/TP_5.pdf)
 
 
-## La régression linéaire
+## Régression linéaire
 
 Supports :
 
@@ -114,7 +107,7 @@ Supports :
 - [Cours de Philippe Marchand](https://pmarchand1.github.io/ECL7102/) (Université du Québec en Abitibi-Témiscamingue) : [Régression linéaire simple](https://pmarchand1.github.io/ECL7102/notes_cours/6-Regression_lineaire.html)
 
 
-## L'Anova
+## Anova
 
 Supports :
 
