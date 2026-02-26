@@ -365,7 +365,7 @@ Visualisation avec *factoextra*.
 ```{r}
 #| out.width: 55%
 # ACP
-XYZ_pca <- prcomp(XYZ, scale = TRUE)
+XYZ_pca <- prcomp(XYZ, scale. = TRUE)
 library("factoextra")
 fviz_eig(XYZ_pca)
 ```
