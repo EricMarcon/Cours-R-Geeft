@@ -3251,7 +3251,7 @@ sqrt(x1)</pre>
 ##         return(Log)
 ##     }
 ## }
-## &lt;bytecode: 0x145251098&gt;
+## &lt;bytecode: 0x135f03d40&gt;
 ## &lt;environment: namespace:entropart&gt;</pre>
 
 <p></p>
@@ -3298,10 +3298,10 @@ mb &lt;- microbenchmark(sqrt(x1), sapply(x1, FUN = sqrt),
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##                              expr   median
-## 1                        sqrt(x1)   1.3530
-## 2          sapply(x1, FUN = sqrt) 164.0820
-## 3                lapply(x1, sqrt) 134.1520
-## 4 vapply(x1, sqrt, FUN.VALUE = 0) 134.3365</pre>
+## 1                        sqrt(x1)   1.4760
+## 2          sapply(x1, FUN = sqrt) 165.4555
+## 3                lapply(x1, sqrt) 136.1815
+## 4 vapply(x1, sqrt, FUN.VALUE = 0) 136.2225</pre>
 
 <p></p>
 
@@ -3327,8 +3327,8 @@ mb &lt;- microbenchmark(vapply_sqrt(x1), boucle(x1))
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##              expr   median
-## 1 vapply_sqrt(x1) 144.0535
-## 2      boucle(x1) 410.0615</pre>
+## 1 vapply_sqrt(x1) 161.0685
+## 2      boucle(x1) 475.9690</pre>
 
 <p></p>
 
@@ -3443,8 +3443,8 @@ mb &lt;- microbenchmark(
 summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 
 <pre >##                                       expr median
-## 1 apply(paracou6_x, MARGIN = 2, FUN = sum) 16.974
-## 2                      colSums(paracou6_x)  2.952</pre>
+## 1 apply(paracou6_x, MARGIN = 2, FUN = sum) 16.892
+## 2                      colSums(paracou6_x)  2.911</pre>
 
 <pre class = 'prettyprint lang-r'>colSums(paracou6_x)</pre>
 
@@ -3468,7 +3468,7 @@ summary(mb)[, c(&quot;expr&quot;, &quot;median&quot;)]</pre>
 ## 2                      colSums(paracou6_x &gt; 0)
 ##   median
 ## 1 20.746
-## 2  5.207</pre>
+## 2  5.371</pre>
 
 <pre class = 'prettyprint lang-r'>colSums(paracou6_x &gt; 0)</pre>
 
