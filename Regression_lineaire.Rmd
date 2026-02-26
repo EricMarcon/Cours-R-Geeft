@@ -290,7 +290,7 @@ Attention : la puissance du test augmente avec la taille de l'échantillon (limi
 Teste l'hypothèse que deux échantillons sont issus de la même distribution :
 
 ```{r}
-mod_l1_lm |> residuals() %>% ks.test(rnorm(length(.), 0, var(.)))
+mod_l1_lm |> residuals() %>% ks.test(rnorm(length(.), 0, sd(.)))
 ```
 
 Plus général que Shapiro-Wilk.
@@ -356,7 +356,7 @@ ggplot() +
   # Points y*
   geom_point(data = mod_l1null_predict, aes(x = x, y = y), col = 'red') +
   # Distribution autour de y*
-  geom_point(data = norm_dta, aes(x = x, y = y), col = 'red', alpha=0.02) +
+  geom_point(data = norm_dta, aes(x = x, y = y), col = 'red', alpha = 0.02) +
   xlim(c(5, 15)) + ylim(c(-2, 3))
 ```
 
@@ -412,7 +412,7 @@ Quadrupler l'effort d'échantillonnage divise par deux l'intervalle de confiance
 ```{r}
 mod_l1x4 <- tibble(
   x = rnorm(n * 4, mean = 10, sd = 2), # x est calculé avant y 
-  y = rnorm(n * 4, mean = beta_0 + beta_1 * x, sd =sigma) # y utilise x
+  y = rnorm(n * 4, mean = beta_0 + beta_1 * x, sd = sigma) # y utilise x
 )
 mod_l1x4_lm <- lm(y ~ x, data = mod_l1x4)
 summary(mod_l1x4_lm)$coefficients
@@ -427,7 +427,7 @@ Retirer les valeurs intermédiaires de $X$ augmente le R² (*design factoriel*) 
 
 ```{r}
 mod_l1x4 |> 
-  filter(x < 6 | x >14) %>% # pas |> pour "data = ."
+  filter(x < 6 | x > 14) %>% # pas |> pour "data = ."
   lm(y ~ x, data = .) |> 
   summary() |> 
   pluck("r.squared")
@@ -681,7 +681,7 @@ Si les résidus ne sont pas normaux, il est possible de faire la régression sur
 Modèle univarié :
 
 ```{r}
-lm(rank(y) ~ rank(x), data = mod_l1)|> summary()
+lm(rank(y) ~ rank(x), data = mod_l1) |> summary()
 ```
 ## Exemple
 
@@ -746,7 +746,7 @@ Mais on ne doit pas tenter à l'aveugle toutes les transformations possibles : v
 
 Les modèles allométriques prévoient que la hauteur des arbres est liée au diamètre à une puissance inférieure à 1 : plus l'arbre est grand, moins il a besoin d'investir en hauteur et plus en diamètre.
 
-Le modèle est alors $$\ln(Y) = \beta_0 + \beta_1 \log(X_1) + \Epsilon$$
+Le modèle est alors $$\ln(Y) = \beta_0 + \beta_1 \ln(X_1) + \Epsilon$$
 
 - $Y$ est la hauteur des arbres ;
 - $X_1$ est leur diamètre ;
