@@ -3206,7 +3206,7 @@ line-height: 1.9;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">24 février 2026</p>
+            <p style="margin-top: 6px; margin-left: -2px;">26 février 2026</p>
           </hgroup>
   </slide>
 
@@ -3384,14 +3384,14 @@ mod_l1 &lt;- tibble(x, y = rnorm(n, mean = beta_0 + beta_1*x, sd = sigma))</pre>
 
 <p></p>
 
-<pre class = 'prettyprint lang-r'>mod_l1_lm |&gt; residuals() %&gt;% ks.test(rnorm(length(.), 0, var(.)))</pre>
+<pre class = 'prettyprint lang-r'>mod_l1_lm |&gt; residuals() %&gt;% ks.test(rnorm(length(.), 0, sd(.)))</pre>
 
 <pre >## 
 ##  Asymptotic two-sample Kolmogorov-Smirnov
 ##  test
 ## 
-## data:  . and rnorm(length(.), 0, var(.))
-## D = 0.11, p-value = 0.5806
+## data:  . and rnorm(length(.), 0, sd(.))
+## D = 0.1, p-value = 0.6994
 ## alternative hypothesis: two-sided</pre>
 
 <p></p>
@@ -3511,7 +3511,7 @@ mod_l1 &lt;- tibble(x, y = rnorm(n, mean = beta_0 + beta_1*x, sd = sigma))</pre>
 
 <pre class = 'prettyprint lang-r'>mod_l1x4 &lt;- tibble(
   x = rnorm(n * 4, mean = 10, sd = 2), # x est calculé avant y 
-  y = rnorm(n * 4, mean = beta_0 + beta_1 * x, sd =sigma) # y utilise x
+  y = rnorm(n * 4, mean = beta_0 + beta_1 * x, sd = sigma) # y utilise x
 )
 mod_l1x4_lm &lt;- lm(y ~ x, data = mod_l1x4)
 summary(mod_l1x4_lm)$coefficients</pre>
@@ -3534,7 +3534,7 @@ summary(mod_l1x4_lm)$coefficients</pre>
 <p></p>
 
 <pre class = 'prettyprint lang-r'>mod_l1x4 |&gt; 
-  filter(x &lt; 6 | x &gt;14) %&gt;% # pas |&gt; pour &quot;data = .&quot;
+  filter(x &lt; 6 | x &gt; 14) %&gt;% # pas |&gt; pour &quot;data = .&quot;
   lm(y ~ x, data = .) |&gt; 
   summary() |&gt; 
   pluck(&quot;r.squared&quot;)</pre>
@@ -3844,7 +3844,7 @@ mod_l2 &lt;- tibble(
 
 <p></p>
 
-<pre class = 'prettyprint lang-r'>lm(rank(y) ~ rank(x), data = mod_l1)|&gt; summary()</pre>
+<pre class = 'prettyprint lang-r'>lm(rank(y) ~ rank(x), data = mod_l1) |&gt; summary()</pre>
 
 <pre >## 
 ## Call:
@@ -3954,7 +3954,7 @@ lm(log(V) ~ log(D))</pre>
 
 <p>Les modèles allométriques prévoient que la hauteur des arbres est liée au diamètre à une puissance inférieure à 1 : plus l’arbre est grand, moins il a besoin d’investir en hauteur et plus en diamètre.</p>
 
-<p>Le modèle est alors \[\ln(Y) = \beta_0 + \beta_1 \log(X_1) + \Epsilon\]</p>
+<p>Le modèle est alors \[\ln(Y) = \beta_0 + \beta_1 \ln(X_1) + \Epsilon\]</p>
 
 <ul>
 <li>\(Y\) est la hauteur des arbres ;</li>
